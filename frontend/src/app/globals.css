@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Dark mode berbasis kelas `.dark` pada <html> (toggle manual) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #e2e8f0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+}
+
+/* SQ+ design tokens */
+@theme {
+  --color-sq-navy: #0b1d5d;
+  --color-sq-dark: #071a3d;
+  --color-sq-blue: #2563eb;
+  --color-sq-teal: #10b9a6;
+  --color-sq-slate: #64748b;
+  --color-sq-bg: #f8fafc;
+  --color-sq-border: #e5e7eb;
+  --color-sq-soft: #eef2f7;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Thin, subtle scrollbars for navy sidebar and content panes */
+.sq-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+.sq-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.sq-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
