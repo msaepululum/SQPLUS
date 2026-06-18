@@ -3,6 +3,31 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+$rsudSqlServer = static function (string $database): array {
+    return [
+        'driver' => 'sqlsrv',
+        'host' => env('RSUD_DB_HOST', '10.0.10.204'),
+        'port' => env('RSUD_DB_PORT', '1433'),
+        'database' => $database,
+        'username' => env('RSUD_DB_USERNAME', ''),
+        'password' => env('RSUD_DB_PASSWORD', ''),
+        'charset' => env('RSUD_DB_CHARSET', 'utf8'),
+        'prefix' => '',
+        'prefix_indexes' => true,
+        'encrypt' => env('RSUD_DB_ENCRYPT', 'yes'),
+        'trust_server_certificate' => filter_var(
+            env('RSUD_DB_TRUST_SERVER_CERTIFICATE', true),
+            FILTER_VALIDATE_BOOL
+        ),
+    ];
+};
+
+$rsudConfig = require __DIR__.'/rsud.php';
+$rsudConnections = [];
+foreach ($rsudConfig['connections'] ?? [] as $name => $meta) {
+    $rsudConnections[$name] = $rsudSqlServer($meta['database']);
+}
+
 return [
 
     /*
@@ -17,7 +42,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -110,9 +135,14 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
-            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+            'encrypt' => env('DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => filter_var(
+                env('DB_TRUST_SERVER_CERTIFICATE', true),
+                FILTER_VALIDATE_BOOL
+            ),
         ],
+
+        ...$rsudConnections,
 
     ],
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { AiAssistantButton } from "@/components/ai/AiAssistantButton";
+import { useTranslation } from "@/components/providers/LocaleProvider";
 import { MobileNavProvider, useMobileNav } from "./MobileNavContext";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
@@ -7,6 +9,7 @@ import { useState } from "react";
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
   const { open, close } = useMobileNav();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -14,7 +17,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       {open && (
         <button
           type="button"
-          aria-label="Tutup menu"
+          aria-label={t("appShell.closeOverlay")}
           className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-[1px] lg:hidden"
           onClick={close}
         />
@@ -31,6 +34,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+
+      <AiAssistantButton />
     </div>
   );
 }

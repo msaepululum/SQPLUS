@@ -3,6 +3,8 @@
 import { useMobileNav } from "@/components/layout/MobileNavContext";
 import { ThemeMenu } from "@/components/layout/ThemeMenu";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useTranslation } from "@/components/providers/LocaleProvider";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import {
   Bell,
@@ -21,6 +23,7 @@ export function Topbar({
   onToggleCollapse?: () => void;
 }) {
   const { user } = useAuthContext();
+  const { t } = useTranslation();
   const { toggle } = useMobileNav();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +44,7 @@ export function Topbar({
       <button
         type="button"
         onClick={toggle}
-        aria-label="Buka menu"
+        aria-label={t("topbar.openMenu")}
         className="rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 lg:hidden"
       >
         <Menu className="h-5 w-5" strokeWidth={2} />
@@ -52,7 +55,7 @@ export function Topbar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          aria-label="Ciutkan sidebar"
+          aria-label={t("topbar.collapseSidebar")}
           className="hidden rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 lg:inline-flex"
         >
           <PanelLeft className="h-5 w-5" strokeWidth={2} />
@@ -65,7 +68,7 @@ export function Topbar({
         <input
           ref={searchRef}
           type="search"
-          placeholder="Cari menu, dokumen, atau data…"
+          placeholder={t("topbar.searchPlaceholder")}
           className="h-9 w-full rounded-lg border border-sq-border bg-sq-bg pl-9 pr-16 text-sm text-sq-dark placeholder:text-sq-slate/70 focus:border-sq-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-sq-blue/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
         />
         <kbd className="pointer-events-none absolute right-2 hidden items-center gap-0.5 rounded border border-sq-border bg-white px-1.5 py-0.5 text-[10px] font-medium text-sq-slate dark:border-slate-700 dark:bg-slate-900 lg:inline-flex">
@@ -76,7 +79,7 @@ export function Topbar({
       {/* Search icon (mobile) */}
       <button
         type="button"
-        aria-label="Cari"
+        aria-label={t("topbar.search")}
         onClick={() => searchRef.current?.focus()}
         className="rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden"
       >
@@ -87,7 +90,7 @@ export function Topbar({
         {/* Pesan */}
         <button
           type="button"
-          aria-label="Pesan"
+          aria-label={t("topbar.messages")}
           className="relative hidden rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 sm:inline-flex"
         >
           <MessageSquare className="h-5 w-5" strokeWidth={2} />
@@ -95,13 +98,13 @@ export function Topbar({
 
         {/* Approval Saya */}
         <Button variant="secondary" icon={CheckSquare} className="hidden lg:inline-flex">
-          Approval Saya
+          {t("topbar.myApprovals")}
         </Button>
 
         {/* Notifikasi */}
         <button
           type="button"
-          aria-label="Notifikasi"
+          aria-label={t("topbar.notifications")}
           className="relative rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           <Bell className="h-5 w-5" strokeWidth={2} />
@@ -109,6 +112,10 @@ export function Topbar({
         </button>
 
         {/* Tema */}
+        <LanguageSwitcher
+          buttonClassName="border-sq-border bg-white text-sq-dark dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        />
+
         <ThemeMenu />
 
         {/* Profil */}
@@ -123,7 +130,7 @@ export function Topbar({
             <span className="block max-w-[10rem] truncate text-xs font-semibold text-sq-dark dark:text-slate-100">
               {user?.name ?? "Dr. Budi Santoso"}
             </span>
-            <span className="block text-[11px] text-sq-slate">Direktur Utama</span>
+            <span className="block text-[11px] text-sq-slate">{t("topbar.directorRole")}</span>
           </span>
         </Link>
       </div>

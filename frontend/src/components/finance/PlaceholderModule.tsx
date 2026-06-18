@@ -1,4 +1,4 @@
-import { FinanceTopBar } from "@/components/finance/FinanceTopBar";
+import { PageFrame } from "@/components/layout/PageFrame";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 
 type PlaceholderModuleProps = {
@@ -8,14 +8,11 @@ type PlaceholderModuleProps = {
 
 export function PlaceholderModule({ title, subtitle }: PlaceholderModuleProps) {
   return (
-    <>
-      <FinanceTopBar title={title} subtitle={subtitle} />
-      <div className="p-4 sm:p-6">
-        <Card variant="dashed" className="py-12 text-center sm:py-16">
-          <CardTitle className="text-base sm:text-lg">Modul {title}</CardTitle>
-          <CardDescription className="mt-2">Dalam pengembangan</CardDescription>
-        </Card>
-      </div>
-    </>
+    <PageFrame title={title} description={subtitle}>
+      <Card variant="dashed" className="mt-3 py-10 text-center sm:py-12">
+        <CardTitle className="text-base sm:text-lg">Modul {title}</CardTitle>
+        <CardDescription className="mt-2">Dalam pengembangan</CardDescription>
+      </Card>
+    </PageFrame>
   );
 }

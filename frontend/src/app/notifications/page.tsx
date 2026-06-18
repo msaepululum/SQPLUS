@@ -1,10 +1,10 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 
 export default function NotificationsPage() {
   return (
-    <PageHeader
+    <PageFrame
       title="Notifikasi"
-      description="Pemberitahuan sistem, approval, dan aktivitas penting."
+      description="Pemberitahuan sistem dan aktivitas terbaru."
     />
   );
 }

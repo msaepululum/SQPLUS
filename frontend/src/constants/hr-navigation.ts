@@ -1,7 +1,17 @@
-export const HR_SUB_NAV = [
-  { label: "Ringkasan", href: "/hr" },
-  { label: "Karyawan", href: "/hr/employees" },
-  { label: "Absensi", href: "/hr/attendance" },
-  { label: "Cuti", href: "/hr/leave" },
-  { label: "Penggajian", href: "/hr/payroll" },
-] as const;
+export type HrNavItem = {
+  labelKey:
+    | "hr.nav.summary"
+    | "hr.nav.employees"
+    | "hr.nav.attendance"
+    | "hr.nav.leave"
+    | "hr.nav.payroll";
+  href: string;
+};
+
+export const HR_SUB_NAV: HrNavItem[] = [
+  { labelKey: "hr.nav.summary", href: "/hr" },
+  { labelKey: "hr.nav.employees", href: "/hr/employees" },
+  { labelKey: "hr.nav.attendance", href: "/hr/attendance" },
+  { labelKey: "hr.nav.leave", href: "/hr/leave" },
+  { labelKey: "hr.nav.payroll", href: "/hr/payroll" },
+];

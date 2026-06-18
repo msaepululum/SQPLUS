@@ -4,32 +4,36 @@ import {
   useTheme,
   type ThemePreference,
 } from "@/components/providers/ThemeProvider";
+import { useTranslation } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const OPTIONS: {
   value: ThemePreference;
-  label: string;
-  description: string;
+  labelKey: "theme.light" | "theme.dark" | "theme.system";
+  descriptionKey:
+    | "theme.lightDescription"
+    | "theme.darkDescription"
+    | "theme.systemDescription";
   icon: typeof Sun;
 }[] = [
   {
     value: "light",
-    label: "Terang",
-    description: "Tampilan terang",
+    labelKey: "theme.light",
+    descriptionKey: "theme.lightDescription",
     icon: Sun,
   },
   {
     value: "dark",
-    label: "Gelap",
-    description: "Tampilan gelap",
+    labelKey: "theme.dark",
+    descriptionKey: "theme.darkDescription",
     icon: Moon,
   },
   {
     value: "system",
-    label: "Sistem",
-    description: "Ikuti pengaturan perangkat",
+    labelKey: "theme.system",
+    descriptionKey: "theme.systemDescription",
     icon: Monitor,
   },
 ];
@@ -42,6 +46,7 @@ function TriggerIcon({ preference }: { preference: ThemePreference }) {
 
 export function ThemeMenu() {
   const { preference, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +81,7 @@ export function ThemeMenu() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Pilih tema"
+        aria-label={t("theme.select")}
         aria-expanded={open}
         aria-haspopup="menu"
         className="rounded-lg border border-sq-border p-2 text-sq-slate hover:bg-sq-soft dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -90,7 +95,7 @@ export function ThemeMenu() {
           className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-sq-border bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
         >
           <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-sq-slate">
-            Tema
+            {t("theme.label")}
           </p>
           {OPTIONS.map((opt) => {
             const Icon = opt.icon;
@@ -116,10 +121,10 @@ export function ThemeMenu() {
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-semibold text-sq-dark dark:text-slate-100">
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </span>
                   <span className="block text-[11px] text-sq-slate">
-                    {opt.description}
+                    {t(opt.descriptionKey)}
                   </span>
                 </span>
                 {active && (

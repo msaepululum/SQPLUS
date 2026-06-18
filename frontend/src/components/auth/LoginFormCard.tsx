@@ -1,21 +1,23 @@
 "use client";
 
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useTranslation } from "@/components/providers/LocaleProvider";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import {
-  ChevronDown,
   Eye,
   EyeOff,
-  Globe,
   Lock,
   Shield,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 
 export function LoginFormCard() {
   const { login } = useAuthContext();
-  const [email, setEmail] = useState("admin@sqplus.local");
-  const [password, setPassword] = useState("password");
+  const { t } = useTranslation();
+  const [noAbsen, setNoAbsen] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,60 +28,79 @@ export function LoginFormCard() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(email, password);
+      await login(noAbsen, password);
     } catch {
-      setError("Username/NIP atau kata sandi salah.");
+      setError(t("login.errorInvalid"));
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-[#F4F6F9] dark:bg-slate-950">
-      {/* Mobile logo */}
-      <div className="flex shrink-0 items-center gap-2 px-5 pt-5 lg:hidden">
-        <span className="text-xl font-bold text-[#071A3D] dark:text-white">
-          SQ<span className="text-[#10B9A6]">+</span>
-        </span>
-        <span className="text-[11px] text-sq-slate">
-          Sistem Integrasi Rumah Sakit
-        </span>
+    <div className="relative flex min-h-[100dvh] min-w-0 flex-1 flex-col lg:h-full lg:overflow-hidden lg:bg-[#F4F6F9] dark:lg:bg-slate-950">
+      {/* Mobile background — foto hospital + overlay navy */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#071A3D] lg:hidden"
+      >
+        <div className="absolute inset-x-0 bottom-0 top-[28%]">
+          <Image
+            src="/images/hospital.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-[center_38%] saturate-[1.15] contrast-[1.06] brightness-[0.9]"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#071A3D] from-0% via-[#071A3D]/92 via-[12%] via-[#071A3D]/70 via-[28%] via-[#071A3D]/35 via-[42%] to-transparent to-[68%]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#071A3D] from-0% via-[#071A3D]/75 via-[22%] to-transparent to-[50%]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#10B9A6]/30 via-transparent to-[#2563EB]/15 mix-blend-soft-light" />
+          <div className="absolute inset-0 bg-[#0B1D5D]/35 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-[#10B9A6]/10 mix-blend-color" />
+        </div>
+        <div className="absolute inset-x-0 top-0 h-[34%] bg-[#071A3D]" />
       </div>
 
-      {/* Language */}
-      <div className="flex shrink-0 justify-end px-5 pt-5 lg:px-8 lg:pt-6">
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-lg border border-sq-border bg-white px-3 py-1.5 text-xs font-medium text-[#071A3D] shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-        >
-          <Globe className="h-3.5 w-3.5 text-sq-slate" strokeWidth={2} />
-          Bahasa Indonesia
-          <ChevronDown className="h-3.5 w-3.5 text-sq-slate" strokeWidth={2} />
-        </button>
+      {/* Mobile header — overlay agar card bisa center penuh */}
+      <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 pb-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(0.75rem,env(safe-area-inset-top))] lg:relative lg:z-10 lg:hidden">
+        <div className="min-w-0">
+          <span className="text-lg font-bold text-white sm:text-xl">
+            SQ<span className="text-[#10B9A6]">+</span>
+          </span>
+          <p className="truncate text-[10px] text-slate-400 sm:text-[11px]">
+            {t("common.appSubtitle")}
+          </p>
+        </div>
+        <LanguageSwitcher />
+      </header>
+
+      {/* Desktop language */}
+      <div className="hidden shrink-0 justify-end px-8 pt-6 lg:flex">
+        <LanguageSwitcher />
       </div>
 
-      {/* Form — center vertikal, tanpa scroll di desktop */}
-      <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-4 sm:px-6 lg:px-8 lg:py-0">
-        <div className="w-full max-w-[400px] rounded-2xl border border-sq-border bg-white p-5 shadow-[0_8px_30px_rgba(7,26,61,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-          <p className="text-xs text-sq-slate">Selamat Datang Kembali</p>
+      {/* Form — center di mobile & desktop, scroll saat keyboard */}
+      <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(2.75rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,env(safe-area-inset-top))] sm:py-4 sm:pb-[max(3rem,env(safe-area-inset-bottom))] sm:pt-[max(4.75rem,env(safe-area-inset-top))] lg:overflow-hidden lg:px-8 lg:py-0 lg:pb-0 lg:pt-0">
+        <div className="my-auto w-full max-w-[400px]">
+          <div className="rounded-2xl border border-sq-border bg-white p-4 shadow-[0_8px_30px_rgba(7,26,61,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-6 lg:shadow-[0_8px_30px_rgba(7,26,61,0.08)]">
+          <p className="text-xs text-sq-slate">{t("login.welcome")}</p>
           <h1 className="mt-0.5 text-xl font-bold text-[#071A3D] dark:text-white sm:text-2xl">
-            Masuk Ke Akun{" "}
+            {t("login.title")}{" "}
             <span className="text-[#10B9A6]">
               SQ<span className="text-[#2563EB]">+</span>
             </span>
           </h1>
           <p className="mt-1.5 text-[13px] leading-snug text-sq-slate">
-            Masukkan kredensial Anda untuk mengakses dashboard manajemen rumah
-            sakit.
+            {t("login.subtitle")}
           </p>
 
           <form className="mt-5 space-y-3.5" onSubmit={handleSubmit}>
             <div>
               <label
-                htmlFor="login-username"
+                htmlFor="login-employee-number"
                 className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200"
               >
-                Username atau NIP
+                {t("login.employeeNumberLabel")}
               </label>
               <div className="relative">
                 <User
@@ -87,13 +108,15 @@ export function LoginFormCard() {
                   strokeWidth={2}
                 />
                 <input
-                  id="login-username"
+                  id="login-employee-number"
+                  name="no_absen"
                   type="text"
                   required
+                  inputMode="numeric"
                   autoComplete="username"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Masukkan username atau NIP"
+                  value={noAbsen}
+                  onChange={(e) => setNoAbsen(e.target.value)}
+                  placeholder={t("login.employeeNumberPlaceholder")}
                   className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-3 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
@@ -104,7 +127,7 @@ export function LoginFormCard() {
                 htmlFor="login-password"
                 className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200"
               >
-                Kata Sandi
+                {t("login.passwordLabel")}
               </label>
               <div className="relative">
                 <Lock
@@ -113,12 +136,13 @@ export function LoginFormCard() {
                 />
                 <input
                   id="login-password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Masukkan kata sandi"
+                  placeholder={t("login.passwordPlaceholder")}
                   className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-10 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
                 <button
@@ -126,8 +150,8 @@ export function LoginFormCard() {
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={
                     showPassword
-                      ? "Sembunyikan kata sandi"
-                      : "Tampilkan kata sandi"
+                      ? t("login.hidePassword")
+                      : t("login.showPassword")
                   }
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-sq-slate hover:text-[#071A3D] dark:hover:text-slate-200"
                 >
@@ -148,13 +172,13 @@ export function LoginFormCard() {
                   onChange={(e) => setRemember(e.target.checked)}
                   className="h-3.5 w-3.5 rounded border-sq-border text-[#2563EB] focus:ring-[#2563EB]/30"
                 />
-                Ingat saya
+                {t("login.rememberMe")}
               </label>
               <button
                 type="button"
                 className="text-xs font-medium text-[#2563EB] hover:underline"
               >
-                Lupa kata sandi?
+                {t("login.forgotPassword")}
               </button>
             </div>
 
@@ -173,7 +197,7 @@ export function LoginFormCard() {
               className="flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#2563EB] to-[#10B9A6] text-xs font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Lock className="h-4 w-4" strokeWidth={2} />
-              {submitting ? "Memproses..." : "Masuk ke Dashboard"}
+              {submitting ? t("login.submitting") : t("login.submit")}
             </button>
           </form>
 
@@ -183,12 +207,16 @@ export function LoginFormCard() {
               strokeWidth={2}
             />
             <p className="text-[11px] leading-relaxed text-sq-slate dark:text-slate-400">
-              Akses ini tercatat dalam audit log sistem. Pastikan Anda logout
-              setelah selesai menggunakan aplikasi di perangkat bersama.
+              {t("login.securityNotice")}
             </p>
           </div>
         </div>
+        </div>
       </div>
+
+      <footer className="fixed inset-x-0 bottom-0 z-20 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 text-center text-[10px] text-slate-400 lg:hidden">
+        {t("common.copyright")}
+      </footer>
     </div>
   );
 }

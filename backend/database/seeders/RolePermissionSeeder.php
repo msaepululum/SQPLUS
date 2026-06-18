@@ -30,6 +30,7 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'supply_chain.items.manage', 'module' => 'supply_chain', 'label' => 'Kelola item'],
             ['name' => 'workflow.approve', 'module' => 'workflow', 'label' => 'Melakukan approval'],
             ['name' => 'workflow.delegate', 'module' => 'workflow', 'label' => 'Delegasi approval'],
+            ['name' => 'ai.assistant.use', 'module' => 'ai', 'label' => 'Gunakan AI Assistant'],
         ];
 
         foreach ($permissions as $perm) {
@@ -40,33 +41,33 @@ class RolePermissionSeeder extends Seeder
             'super_admin' => ['label' => 'Super Admin', 'permissions' => '*'],
             'director' => ['label' => 'Direktur', 'permissions' => [
                 'foundation.audit.view', 'finance.reports.view', 'hr.payroll.view',
-                'hr.leave.approve', 'procurement.po.approve', 'workflow.approve',
+                'hr.leave.approve', 'procurement.po.approve', 'workflow.approve', 'ai.assistant.use',
             ]],
             'finance_manager' => ['label' => 'Manajer Keuangan', 'permissions' => [
-                'finance.reports.view', 'finance.journals.create', 'finance.budgets.manage', 'workflow.approve',
+                'finance.reports.view', 'finance.journals.create', 'finance.budgets.manage', 'workflow.approve', 'ai.assistant.use',
             ]],
             'finance_staff' => ['label' => 'Staff Keuangan', 'permissions' => [
-                'finance.reports.view', 'finance.journals.create',
+                'finance.reports.view', 'finance.journals.create', 'ai.assistant.use',
             ]],
             'hr_manager' => ['label' => 'Manajer SDM', 'permissions' => [
-                'hr.employees.view', 'hr.employees.manage', 'hr.leave.approve', 'hr.payroll.view', 'workflow.approve',
+                'hr.employees.view', 'hr.employees.manage', 'hr.leave.approve', 'hr.payroll.view', 'workflow.approve', 'ai.assistant.use',
             ]],
             'hr_staff' => ['label' => 'Staff SDM', 'permissions' => [
-                'hr.employees.view', 'hr.employees.manage',
+                'hr.employees.view', 'hr.employees.manage', 'ai.assistant.use',
             ]],
             'procurement_manager' => ['label' => 'Manajer Pengadaan', 'permissions' => [
-                'procurement.pr.manage', 'procurement.po.approve', 'procurement.po.manage', 'workflow.approve',
+                'procurement.pr.manage', 'procurement.po.approve', 'procurement.po.manage', 'workflow.approve', 'ai.assistant.use',
             ]],
             'procurement_staff' => ['label' => 'Staff Pengadaan', 'permissions' => [
-                'procurement.pr.manage', 'procurement.po.manage',
+                'procurement.pr.manage', 'procurement.po.manage', 'ai.assistant.use',
             ]],
             'warehouse_manager' => ['label' => 'Manajer Gudang', 'permissions' => [
-                'supply_chain.stock.move', 'supply_chain.items.manage', 'workflow.approve',
+                'supply_chain.stock.move', 'supply_chain.items.manage', 'workflow.approve', 'ai.assistant.use',
             ]],
             'warehouse_staff' => ['label' => 'Staff Gudang', 'permissions' => [
-                'supply_chain.stock.move',
+                'supply_chain.stock.move', 'ai.assistant.use',
             ]],
-            'employee' => ['label' => 'Karyawan', 'permissions' => []],
+            'employee' => ['label' => 'Karyawan', 'permissions' => ['ai.assistant.use']],
         ];
 
         foreach ($roles as $name => $config) {

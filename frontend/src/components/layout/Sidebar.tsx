@@ -2,7 +2,9 @@
 
 import { useMobileNav } from "@/components/layout/MobileNavContext";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useTranslation } from "@/components/providers/LocaleProvider";
 import { HOME_MENU, MAIN_MENU } from "@/constants/menu";
+import { SidebarNavGroup } from "@/components/layout/SidebarNavGroup";
 import { cn } from "@/lib/cn";
 import {
   ChevronLeft,
@@ -61,6 +63,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const { user, logout } = useAuthContext();
+  const { t } = useTranslation();
   const { open, close } = useMobileNav();
 
   return (
@@ -92,7 +95,7 @@ export function Sidebar({
                 SQ+
               </span>
               <span className="block truncate text-[11px] leading-tight text-slate-400">
-                Sistem Integrasi Rumah Sakit
+                {t("common.appSubtitle")}
               </span>
             </span>
           )}
@@ -101,7 +104,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={close}
-          aria-label="Tutup menu"
+          aria-label={t("sidebar.closeMenu")}
           className="ml-auto rounded-lg p-1.5 text-slate-300 hover:bg-white/10 hover:text-white lg:hidden"
         >
           <X className="h-5 w-5" strokeWidth={2} />
@@ -112,7 +115,7 @@ export function Sidebar({
       <nav className="sq-scroll flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
         <SidebarLink
           href={HOME_MENU.href}
-          label={HOME_MENU.label}
+          label={t(HOME_MENU.labelKey)}
           icon={HOME_MENU.icon}
           collapsed={collapsed}
           active={pathname === HOME_MENU.href}
@@ -121,20 +124,34 @@ export function Sidebar({
 
         {!collapsed && (
           <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Modul Utama
+            {t("menu.mainModules")}
           </p>
         )}
-        {MAIN_MENU.map((item) => (
-          <SidebarLink
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-            collapsed={collapsed}
-            active={isActive(pathname, item.href)}
-            onNavigate={close}
-          />
-        ))}
+        {MAIN_MENU.map((item) =>
+          item.children && item.children.length > 0 ? (
+            <SidebarNavGroup
+              key={item.href}
+              item={item}
+              label={t(item.labelKey)}
+              childLabels={Object.fromEntries(
+                item.children.map((child) => [child.labelKey, t(child.labelKey)])
+              )}
+              pathname={pathname}
+              collapsed={collapsed}
+              onNavigate={close}
+            />
+          ) : (
+            <SidebarLink
+              key={item.href}
+              href={item.href}
+              label={t(item.labelKey)}
+              icon={item.icon}
+              collapsed={collapsed}
+              active={isActive(pathname, item.href)}
+              onNavigate={close}
+            />
+          )
+        )}
       </nav>
 
       {/* Footer: profil ringkas + collapse */}
@@ -162,7 +179,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => logout()}
-              aria-label="Keluar"
+              aria-label={t("sidebar.logout")}
               className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
             >
               <LogOut className="h-4 w-4" strokeWidth={2} />
@@ -186,7 +203,7 @@ export function Sidebar({
               )}
               strokeWidth={2}
             />
-            {!collapsed && <span>Ciutkan menu</span>}
+            {!collapsed && <span>{t("sidebar.collapseMenu")}</span>}
           </button>
         )}
       </div>

@@ -1,10 +1,10 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 
 export default function SystemPage() {
   return (
-    <PageHeader
+    <PageFrame
       title="Sistem"
-      description="Konfigurasi master data, RBAC, audit trail, dan integrasi."
+      description="Konfigurasi aplikasi, peran, dan integrasi."
     />
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { PageFrame } from "@/components/layout/PageFrame";
 import { Card } from "@/components/ui/Card";
 import {
   createLeaveRequest,
@@ -72,29 +73,25 @@ export default function LeavePage() {
   }
 
   return (
-    <>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Cuti</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Pengajuan dan riwayat cuti karyawan.
-          </p>
-        </div>
+    <PageFrame
+      title="Cuti"
+      description="Pengajuan dan riwayat cuti karyawan."
+      actions={
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
-          className="shrink-0 rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
+          className="shrink-0 rounded-lg bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700"
         >
           {showForm ? "Batal" : "+ Ajukan Cuti"}
         </button>
-      </div>
-
+      }
+    >
       {message && (
-        <p className="mb-4 text-sm text-sky-700">{message}</p>
+        <p className="mb-3 text-sm text-sky-700">{message}</p>
       )}
 
       {showForm && (
-        <Card variant="elevated" className="mb-6">
+        <Card variant="elevated" className="mb-4">
           <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -214,6 +211,6 @@ export default function LeavePage() {
           </tbody>
         </table>
       </Card>
-    </>
+    </PageFrame>
   );
 }

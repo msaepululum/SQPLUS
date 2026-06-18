@@ -1,10 +1,10 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 
 export default function ApprovalsPage() {
   return (
-    <PageHeader
+    <PageFrame
       title="Persetujuan"
-      description="Antrian dokumen yang menunggu persetujuan lintas modul."
+      description="Antrian dokumen yang memerlukan persetujuan Anda."
     />
   );
 }

@@ -31,8 +31,8 @@ export function useAuth() {
   }, []);
 
   const login = useCallback(
-    async (email: string, password: string) => {
-      const authUser = await loginRequest(email, password);
+    async (noAbsen: string, password: string) => {
+      const authUser = await loginRequest(noAbsen, password);
       setUser(authUser);
       router.push("/beranda");
     },

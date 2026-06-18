@@ -14,6 +14,17 @@ Authorization: Bearer {token}
 
 Token diperoleh via `POST /api/auth/login` (Foundation module).
 
+**Body login:**
+
+```json
+{
+  "no_absen": "1014",
+  "password": "********"
+}
+```
+
+Kredensial divalidasi ke tabel `users` di SQL Server `USER_MANAJEMEN` (RSUD Pasar Rebo). Setelah sukses, SQ+ membuat/menyinkronkan user lokal di MySQL untuk token Sanctum.
+
 ## Format Response
 
 ### Sukses

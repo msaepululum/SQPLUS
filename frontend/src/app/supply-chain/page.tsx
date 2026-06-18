@@ -1,10 +1,10 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 
 export default function SupplyChainPage() {
   return (
-    <PageHeader
+    <PageFrame
       title="Asset / Supply Chain"
-      description="Modul inventori, aset tetap, distribusi, stok, dan logistik rumah sakit."
+      description="Inventori, aset tetap, distribusi, dan logistik."
     />
   );
 }

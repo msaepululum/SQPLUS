@@ -17,7 +17,7 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("flex flex-wrap items-center gap-1 text-xs text-sq-slate", className)}
+      className={cn("flex flex-wrap items-center gap-0.5 text-[11px] text-sq-slate", className)}
     >
       {items.map((item, i) => {
         const last = i === items.length - 1;
@@ -32,7 +32,7 @@ export function Breadcrumbs({
                 {item.label}
               </span>
             )}
-            {!last && <ChevronRight className="h-3.5 w-3.5 text-sq-slate/60" strokeWidth={2} />}
+            {!last && <ChevronRight className="h-3 w-3 text-sq-slate/50" strokeWidth={2} />}
           </span>
         );
       })}

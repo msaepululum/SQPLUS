@@ -1,10 +1,10 @@
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 
 export default function ProcurementPage() {
   return (
-    <PageHeader
+    <PageFrame
       title="Pengadaan Barang/Jasa"
-      description="Modul perencanaan pengadaan, PR, tender, PO, dan penerimaan barang/jasa."
+      description="Perencanaan, tender, PO, dan penerimaan barang/jasa."
     />
   );
 }

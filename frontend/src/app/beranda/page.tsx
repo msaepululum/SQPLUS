@@ -1,17 +1,22 @@
+"use client";
+
 import { BerandaKpiRow } from "@/components/beranda/BerandaKpiRow";
 import { InsightAsset } from "@/components/beranda/InsightAsset";
 import { InsightKeuangan } from "@/components/beranda/InsightKeuangan";
 import { InsightPersonalia } from "@/components/beranda/InsightPersonalia";
 import { SorotanPimpinan } from "@/components/beranda/SorotanPimpinan";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
+import { useTranslation } from "@/components/providers/LocaleProvider";
 
 export default function BerandaPage() {
+  const { t } = useTranslation();
+
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Beranda"
-        description="Ringkasan kinerja rumah sakit — keuangan, personalia, aset, dan sorotan pimpinan."
-      />
+    <PageFrame
+      title={t("beranda.title")}
+      description={t("beranda.description")}
+    >
+      <div className="mt-3 space-y-4">
 
       <BerandaKpiRow />
 
@@ -21,6 +26,7 @@ export default function BerandaPage() {
         <InsightAsset />
         <SorotanPimpinan />
       </div>
-    </div>
+      </div>
+    </PageFrame>
   );
 }

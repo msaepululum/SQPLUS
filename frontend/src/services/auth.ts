@@ -9,10 +9,10 @@ import { apiFetch } from "./api";
 
 export { getStoredUser, getToken } from "@/utils/token";
 
-export async function login(email: string, password: string): Promise<AuthUser> {
+export async function login(noAbsen: string, password: string): Promise<AuthUser> {
   const response = await apiFetch<LoginResponse>("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ no_absen: noAbsen, password }),
   });
 
   setSession(response.data.token, response.data.user);

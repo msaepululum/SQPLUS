@@ -22,4 +22,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require __DIR__.'/procurement.php';
     require __DIR__.'/supply-chain.php';
     require __DIR__.'/workflow.php';
+    require __DIR__.'/ai.php';
 });

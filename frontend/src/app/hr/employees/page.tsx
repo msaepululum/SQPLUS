@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 import { Card } from "@/components/ui/Card";
 import { getEmployees } from "@/services/hr";
 import type { Employee } from "@/types/hr";
@@ -33,13 +33,11 @@ export default function EmployeesPage() {
   }, [search]);
 
   return (
-    <>
-      <PageHeader
-        title="Data Karyawan"
-        description={`Daftar karyawan rumah sakit${total ? ` — ${total} pegawai` : ""}.`}
-      />
-
-      <div className="mb-4">
+    <PageFrame
+      title="Data Karyawan"
+      description={`Daftar karyawan rumah sakit${total ? ` — ${total} pegawai` : ""}.`}
+    >
+      <div className="mb-3">
         <input
           type="search"
           placeholder="Cari nama atau kode pegawai..."
@@ -95,6 +93,6 @@ export default function EmployeesPage() {
           </tbody>
         </table>
       </Card>
-    </>
+    </PageFrame>
   );
 }

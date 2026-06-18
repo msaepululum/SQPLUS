@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 import { Card } from "@/components/ui/Card";
 import { getAttendance } from "@/services/hr";
 import type { AttendanceRecord } from "@/types/hr";
@@ -27,13 +27,11 @@ export default function AttendancePage() {
   }, [date]);
 
   return (
-    <>
-      <PageHeader
-        title="Absensi"
-        description="Rekap kehadiran karyawan per tanggal."
-      />
-
-      <div className="mb-4">
+    <PageFrame
+      title="Absensi"
+      description="Rekap kehadiran karyawan per tanggal."
+    >
+      <div className="mb-3">
         <input
           type="date"
           value={date}
@@ -84,6 +82,6 @@ export default function AttendancePage() {
           </tbody>
         </table>
       </Card>
-    </>
+    </PageFrame>
   );
 }

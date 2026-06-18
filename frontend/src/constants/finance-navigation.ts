@@ -1,10 +1,38 @@
-export const FINANCE_SUB_NAV = [
-  { label: "Dashboard", href: "/finance" },
-  { label: "Anggaran", href: "/finance/budget" },
-  { label: "Payment Request", href: "/finance/payment-request" },
-  { label: "Kas & Bank", href: "/finance/cash-bank" },
-  { label: "Laporan", href: "/finance/reports" },
-] as const;
+export type FinanceNavItem = {
+  labelKey:
+    | "finance.nav.dashboard"
+    | "finance.nav.budget"
+    | "finance.nav.revenue"
+    | "finance.nav.expenditure"
+    | "finance.nav.cashBank"
+    | "finance.nav.receivablesPayables"
+    | "finance.nav.payments"
+    | "finance.nav.accounting"
+    | "finance.nav.reports"
+    | "finance.nav.executiveInsight"
+    | "finance.nav.approvals"
+    | "finance.nav.settings";
+  href: string;
+};
 
-/** Label modul utama di sidebar */
-export const FINANCE_MODULE_LABEL = "Keuangan";
+/** Sub-menu modul Keuangan & RenGar */
+export const FINANCE_SUB_NAV: FinanceNavItem[] = [
+  { labelKey: "finance.nav.dashboard", href: "/finance" },
+  { labelKey: "finance.nav.budget", href: "/finance/budget" },
+  { labelKey: "finance.nav.revenue", href: "/finance/revenue" },
+  { labelKey: "finance.nav.expenditure", href: "/finance/expenditure" },
+  { labelKey: "finance.nav.cashBank", href: "/finance/cash-bank" },
+  { labelKey: "finance.nav.receivablesPayables", href: "/finance/receivables-payables" },
+  { labelKey: "finance.nav.payments", href: "/finance/payments" },
+  { labelKey: "finance.nav.accounting", href: "/finance/accounting" },
+  { labelKey: "finance.nav.reports", href: "/finance/reports" },
+  { labelKey: "finance.nav.executiveInsight", href: "/finance/executive-insight" },
+  { labelKey: "finance.nav.approvals", href: "/finance/approvals" },
+  { labelKey: "finance.nav.settings", href: "/finance/settings" },
+];
+
+import { isModuleChildActive } from "@/lib/nav-utils";
+
+export function isFinanceNavActive(pathname: string, href: string): boolean {
+  return isModuleChildActive(pathname, href);
+}

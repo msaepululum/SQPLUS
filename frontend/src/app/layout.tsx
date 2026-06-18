@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import { ThemeProvider, themeNoFlashScript } from "@/components/providers/ThemeProvider";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
@@ -33,7 +34,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-sq-bg text-slate-800 dark:bg-slate-950 dark:text-slate-200">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <LocaleProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

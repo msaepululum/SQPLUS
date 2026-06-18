@@ -9,7 +9,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (noAbsen: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 

@@ -1,5 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { redirect } from "next/navigation";
 
-export default function FinancePaymentRequestPage() {
-  return <PlaceholderModule title="Payment Request" subtitle="Pengajuan, persetujuan, dan pelacakan pembayaran" />;
+export default function FinancePaymentRequestRedirectPage() {
+  redirect("/finance/payments");
 }

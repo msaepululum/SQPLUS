@@ -17,19 +17,21 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn("space-y-3", className)}>
+    <header className={cn("mb-3 space-y-1", className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumbs items={breadcrumbs} />
       )}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-sq-dark dark:text-slate-100">{title}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-sq-dark dark:text-slate-100 sm:text-xl">
+            {title}
+          </h1>
           {description && (
-            <p className="mt-1 max-w-2xl text-sm text-sq-slate">{description}</p>
+            <p className="mt-0.5 text-sm text-sq-slate">{description}</p>
           )}
         </div>
         {actions && (
-          <div className="flex flex-wrap items-center gap-2">{actions}</div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
         )}
       </div>
     </header>

@@ -16,7 +16,7 @@ export default function RevenueDetailPage() {
     <>
       <RevenueDetailHeader />
 
-      <div className="space-y-5 p-4 sm:space-y-6 sm:p-6">
+      <div className="mt-3 space-y-4 sm:space-y-5">
         <RevenueDetailKpis />
 
         <CardGrid cols={3}>

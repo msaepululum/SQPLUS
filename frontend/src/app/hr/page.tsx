@@ -2,7 +2,7 @@
 
 import { StatCard } from "@/components/cards/StatCard";
 import { CardGrid } from "@/components/ui/CardGrid";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 import { getHrDashboard } from "@/services/hr";
 import type { HrDashboard } from "@/types/hr";
 import { useEffect, useState } from "react";
@@ -18,13 +18,11 @@ export default function HrDashboardPage() {
   }, []);
 
   return (
-    <>
-      <PageHeader
-        title="Personalia"
-        description="Ringkasan SDM, kehadiran, cuti, dan penggajian."
-      />
-
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+    <PageFrame
+      title="Personalia"
+      description="Ringkasan SDM, kehadiran, cuti, dan penggajian."
+    >
+      {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
       <CardGrid cols={4}>
         <StatCard
@@ -45,6 +43,6 @@ export default function HrDashboardPage() {
           hint={data?.latest_payroll_period?.name}
         />
       </CardGrid>
-    </>
+    </PageFrame>
   );
 }

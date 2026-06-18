@@ -1,13 +1,14 @@
 import AuthenticatedLayout from "@/components/layout/AuthenticatedLayout";
+import { PageContent } from "@/components/layout/PageContent";
 
-export default function FinanceLayout({
+export default function FinanceModuleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <AuthenticatedLayout>
-      <div className="min-h-full bg-sq-bg">{children}</div>
+      <PageContent>{children}</PageContent>
     </AuthenticatedLayout>
   );
 }

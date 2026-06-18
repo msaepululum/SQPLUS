@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageFrame } from "@/components/layout/PageFrame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { getPayrollPeriod, getPayrollPeriods } from "@/services/hr";
@@ -39,12 +39,10 @@ export default function PayrollPage() {
   }
 
   return (
-    <>
-      <PageHeader
-        title="Penggajian"
-        description="Periode gaji dan rincian slip karyawan."
-      />
-
+    <PageFrame
+      title="Penggajian"
+      description="Periode gaji dan rincian slip karyawan."
+    >
       {loading ? (
         <p className="text-sm text-slate-400">Memuat...</p>
       ) : (
@@ -115,6 +113,6 @@ export default function PayrollPage() {
           </div>
         </CardGrid>
       )}
-    </>
+    </PageFrame>
   );
 }

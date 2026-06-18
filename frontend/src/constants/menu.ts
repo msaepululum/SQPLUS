@@ -6,20 +6,28 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { FINANCE_SUB_NAV } from "./finance-navigation";
+import { HR_SUB_NAV } from "./hr-navigation";
+
+export type NavChild = {
+  labelKey: string;
+  href: string;
+};
 
 export type MenuItem = {
-  label: string;
+  labelKey: string;
   href: string;
   icon: LucideIcon;
-  description: string;
+  descriptionKey: string;
+  children?: readonly NavChild[];
 };
 
 /** Menu beranda — halaman default setelah login */
 export const HOME_MENU: MenuItem = {
-  label: "Beranda",
+  labelKey: "menu.home",
   href: "/beranda",
   icon: LayoutDashboard,
-  description: "Ringkasan kinerja rumah sakit",
+  descriptionKey: "menu.homeDescription",
 };
 
 /**
@@ -28,27 +36,29 @@ export const HOME_MENU: MenuItem = {
  */
 export const MAIN_MENU: MenuItem[] = [
   {
-    label: "Keuangan",
+    labelKey: "menu.finance",
     href: "/finance",
     icon: Wallet,
-    description: "Akuntansi, anggaran, kas, dan pelaporan keuangan",
+    descriptionKey: "menu.financeDescription",
+    children: FINANCE_SUB_NAV,
   },
   {
-    label: "Personalia",
+    labelKey: "menu.hr",
     href: "/hr",
     icon: Users,
-    description: "SDM, kehadiran, penggajian, dan manajemen karyawan",
+    descriptionKey: "menu.hrDescription",
+    children: HR_SUB_NAV,
   },
   {
-    label: "Pengadaan Barang/Jasa",
+    labelKey: "menu.procurement",
     href: "/procurement",
     icon: ShoppingCart,
-    description: "Perencanaan, tender, PO, dan penerimaan barang/jasa",
+    descriptionKey: "menu.procurementDescription",
   },
   {
-    label: "Asset / Supply Chain",
+    labelKey: "menu.supplyChain",
     href: "/supply-chain",
     icon: Boxes,
-    description: "Inventori, aset tetap, distribusi, dan logistik",
+    descriptionKey: "menu.supplyChainDescription",
   },
 ];
