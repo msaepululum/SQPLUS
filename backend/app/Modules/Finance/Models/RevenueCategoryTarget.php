@@ -11,12 +11,16 @@ class RevenueCategoryTarget extends Model
         'budget_year_id',
         'category_id',
         'target_amount',
+        'corrected_amount',
+        'corrected_at',
     ];
 
     protected function casts(): array
     {
         return [
             'target_amount' => 'decimal:4',
+            'corrected_amount' => 'decimal:4',
+            'corrected_at' => 'datetime',
         ];
     }
 

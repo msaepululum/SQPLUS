@@ -35,7 +35,7 @@ class RevenueTargetController extends Controller
             'budget_year_id' => ['required', 'integer', 'exists:budget_years,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.category_id' => ['required', 'string', 'max:32'],
-            'items.*.target_amount' => ['required', 'numeric', 'min:0'],
+            'items.*.menjadi_amount' => ['required', 'numeric', 'min:0'],
         ], [
             'budget_year_id.required' => 'Tahun anggaran wajib dipilih.',
             'items.required' => 'Tidak ada data target untuk disimpan.',

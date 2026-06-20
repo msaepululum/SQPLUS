@@ -4,7 +4,11 @@ export type RevenueTargetRow = {
   category_id: RevenueCategoryId;
   kode: string;
   label: string;
-  target_amount: number;
+  semula_amount: number;
+  menjadi_amount: number;
+  pergeseran_amount: number;
+  perubahan_pct: number | null;
+  corrected_at: string | null;
 };
 
 export type RevenueTargetSummary = {

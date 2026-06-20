@@ -52,7 +52,7 @@ export async function fetchRevenueTargets(budgetYearId: number): Promise<{
 
 export async function saveRevenueTargetsBulk(
   budgetYearId: number,
-  items: { category_id: string; target_amount: number }[]
+  items: { category_id: string; menjadi_amount: number }[]
 ): Promise<{ rows: RevenueTargetRow[]; summary: RevenueTargetSummary; message: string }> {
   const res = await revenueTargetFetch<ApiBulkResponse>("/finance/revenue-targets/bulk", {
     method: "POST",

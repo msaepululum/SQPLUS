@@ -29,7 +29,7 @@ function getTargetValue(row: RevenueTargetRow, draft: TargetDraft): number {
   if (row.category_id in draft) {
     return parseRevenueTargetInput(draft[row.category_id]);
   }
-  return row.target_amount;
+  return row.menjadi_amount;
 }
 
 export function RevenueSetupTargetCrud() {
@@ -99,7 +99,7 @@ export function RevenueSetupTargetCrud() {
     try {
       const items = rows.map((row) => ({
         category_id: row.category_id,
-        target_amount: getTargetValue(row, draft),
+        menjadi_amount: getTargetValue(row, draft),
       }));
       const result = await saveRevenueTargetsBulk(budgetYearId, items);
       setRows(result.rows);
@@ -187,7 +187,10 @@ export function RevenueSetupTargetCrud() {
             <TR>
               <TH className="w-12">Kode</TH>
               <TH>Kategori Pendapatan</TH>
-              <TH className="w-44 text-right">Target (Rp)</TH>
+              <TH className="w-36 text-right">Semula (Rp)</TH>
+              <TH className="w-36 text-right">Menjadi (Rp)</TH>
+              <TH className="w-32 text-right">Pergeseran (Rp)</TH>
+              <TH className="w-24 text-right">Perubahan</TH>
             </TR>
           </THead>
           <TBody>
@@ -195,11 +198,15 @@ export function RevenueSetupTargetCrud() {
               const display =
                 row.category_id in draft
                   ? draft[row.category_id]
-                  : formatRevenueTargetInput(row.target_amount);
+                  : formatRevenueTargetInput(row.menjadi_amount);
+              const locked = Boolean(row.corrected_at);
               return (
                 <TR key={row.category_id}>
                   <TD className="font-mono text-[10px] text-slate-500">{row.kode}</TD>
                   <TD className="text-[11px] font-medium text-slate-700">{row.label}</TD>
+                  <TD className="text-right tabular-nums text-[11px] text-slate-600">
+                    {formatRevenueTargetAmount(row.semula_amount)}
+                  </TD>
                   <TD className="text-right">
                     <Input
                       value={display}
@@ -210,8 +217,18 @@ export function RevenueSetupTargetCrud() {
                         }))
                       }
                       placeholder="0"
-                      className="ml-auto h-8 w-full max-w-[11rem] text-right text-xs tabular-nums"
+                      disabled={locked || saving}
+                      className="ml-auto h-8 w-full max-w-[10rem] text-right text-xs tabular-nums"
                     />
+                    {locked && (
+                      <p className="mt-1 text-[10px] text-slate-400">Sudah dikoreksi (1x)</p>
+                    )}
+                  </TD>
+                  <TD className="text-right tabular-nums text-[11px] text-slate-700">
+                    {formatRevenueTargetAmount(row.pergeseran_amount)}
+                  </TD>
+                  <TD className="text-right tabular-nums text-[11px] text-slate-600">
+                    {row.perubahan_pct == null ? "—" : `${row.perubahan_pct.toFixed(2).replace(".", ",")}%`}
                   </TD>
                 </TR>
               );
@@ -220,9 +237,12 @@ export function RevenueSetupTargetCrud() {
               <TD colSpan={2} className="text-[11px]">
                 Total Target
               </TD>
+              <TD className="text-right text-[11px] tabular-nums text-slate-300">—</TD>
               <TD className="text-right text-[11px] tabular-nums text-[#0d6e63]">
                 {formatRevenueTargetAmount(hasChanges ? draftTotal : (summary?.total_target ?? 0))}
               </TD>
+              <TD className="text-right text-[11px] tabular-nums text-slate-300">—</TD>
+              <TD className="text-right text-[11px] tabular-nums text-slate-300">—</TD>
             </TR>
           </TBody>
         </Table>
