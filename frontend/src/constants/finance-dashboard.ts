@@ -56,21 +56,75 @@ export type IncomeBreakdownRow = {
 export const INCOME_BREAKDOWN: IncomeBreakdownRow[] = [
   {
     month: "Jan",
-    jasaLayanan: 72_456_789_012,
-    apbn: 12_890_123_456,
-    lainLain: 3_776_544_321,
+    jasaLayanan: 78_456_789_123,
+    apbn: 8_765_432_109,
+    lainLain: 1_901_235_557,
   },
   {
     month: "Feb",
-    jasaLayanan: 70_234_567_890,
-    apbn: 13_456_789_012,
-    lainLain: 4_254_315_439,
+    jasaLayanan: 76_123_456_789,
+    apbn: 9_012_345_678,
+    lainLain: 2_809_869_874,
   },
   {
     month: "Mar",
-    jasaLayanan: 76_890_123_456,
-    apbn: 14_123_456_789,
-    lainLain: 4_220_987_645,
+    jasaLayanan: 83_456_789_012,
+    apbn: 9_876_543_210,
+    lainLain: 1_901_235_668,
+  },
+  {
+    month: "Apr",
+    jasaLayanan: 84_996_642_192,
+    apbn: 9_499_851_876,
+    lainLain: 2_046_716_055,
+  },
+  {
+    month: "Mei",
+    jasaLayanan: 89_126_913_570,
+    apbn: 9_961_481_480,
+    lainLain: 2_146_172_840,
+  },
+  {
+    month: "Jun",
+    jasaLayanan: 99_006_957_046,
+    apbn: 11_065_748_039,
+    lainLain: 2_384_083_927,
+  },
+  {
+    month: "Jul",
+    jasaLayanan: 85_974_865_077,
+    apbn: 9_609_185_284,
+    lainLain: 2_070_271_626,
+  },
+  {
+    month: "Agu",
+    jasaLayanan: 81_301_135_704,
+    apbn: 9_086_814_804,
+    lainLain: 1_957_728_393,
+  },
+  {
+    month: "Sep",
+    jasaLayanan: 79_344_691_357,
+    apbn: 8_868_148_148,
+    lainLain: 1_910_617_284,
+  },
+  {
+    month: "Okt",
+    jasaLayanan: 84_235_704_646,
+    apbn: 9_414_803_881,
+    lainLain: 2_028_392_707,
+  },
+  {
+    month: "Nov",
+    jasaLayanan: 86_953_086_429,
+    apbn: 9_718_518_520,
+    lainLain: 2_093_827_160,
+  },
+  {
+    month: "Des",
+    jasaLayanan: 100_065_321_298,
+    apbn: 11_184_038_637,
+    lainLain: 2_409_569_300,
   },
 ];
 
@@ -82,24 +136,18 @@ export type ExpenseBreakdownRow = {
 };
 
 export const EXPENSE_BREAKDOWN: ExpenseBreakdownRow[] = [
-  {
-    month: "Jan",
-    pegawai: 52_345_678_901,
-    barang: 27_890_123_456,
-    modal: 5_436_542_766,
-  },
-  {
-    month: "Feb",
-    pegawai: 51_890_123_456,
-    barang: 28_456_789_012,
-    modal: 5_776_544_321,
-  },
-  {
-    month: "Mar",
-    pegawai: 55_678_901_234,
-    barang: 30_123_456_789,
-    modal: 7_343_320_878,
-  },
+  { month: "Jan", pegawai: 52_260_130_525, barang: 27_415_150_439, modal: 5_997_064_159 },
+  { month: "Feb", pegawai: 52_535_308_641, barang: 27_559_506_172, modal: 6_028_641_976 },
+  { month: "Mar", pegawai: 56_818_864_130, barang: 29_806_617_248, modal: 6_520_197_523 },
+  { month: "Apr", pegawai: 60_246_913_586, barang: 31_604_938_275, modal: 6_913_580_248 },
+  { month: "Mei", pegawai: 61_602_469_136, barang: 32_316_049_383, modal: 7_069_135_802 },
+  { month: "Jun", pegawai: 66_346_913_641, barang: 34_804_938_303, modal: 7_613_580_254 },
+  { month: "Jul", pegawai: 58_891_358_378, barang: 30_893_827_346, modal: 6_758_024_732 },
+  { month: "Agu", pegawai: 57_415_308_641, barang: 30_119_506_172, modal: 6_588_641_976 },
+  { month: "Sep", pegawai: 54_146_913_586, barang: 28_404_938_275, modal: 6_213_580_248 },
+  { month: "Okt", pegawai: 56_330_863_587, barang: 29_550_616_964, modal: 6_464_197_461 },
+  { month: "Nov", pegawai: 57_008_641_486, barang: 29_906_172_583, modal: 6_541_975_252 },
+  { month: "Des", pegawai: 63_143_310_184, barang: 33_124_359_441, modal: 7_245_953_628 },
 ];
 
 export function formatRupiahFull(value: number): string {

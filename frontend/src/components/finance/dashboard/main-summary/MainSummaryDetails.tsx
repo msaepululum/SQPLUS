@@ -1,3 +1,5 @@
+import { cn } from "@/lib/cn";
+
 import {
   CASH_FLOW_SUMMARY,
   EXPENSE_REALIZATION_TABLE,
@@ -9,6 +11,10 @@ import {
   UNIT_EXPENSE_BARS,
 } from "@/constants/main-summary-data";
 import { cardClassName } from "@/components/ui/Card";
+import { tableShellClassName, tableBodyStripedClassName,
+  tableHeadCellCompactClassName,
+  tableHeadRowClassName,
+  tableStripeRowClassName, } from "@/components/ui/tableStyles";
 
 function DetailCard({ title, subtitle, children, className }: { title: string; subtitle?: string; children: React.ReactNode; className?: string }) {
   return (
@@ -96,21 +102,21 @@ export function UnitExpenseBarChart() {
 export function MonthlyRevenueTable() {
   return (
     <DetailCard title="Rekap Pendapatan Bulanan" subtitle="(dalam Juta Rupiah)">
-      <div className="mt-2 sq-scroll overflow-x-auto">
+      <div className={cn("mt-2", tableShellClassName)}>
         <table className="w-full min-w-[16rem] text-[0.5625rem]">
           <thead>
-            <tr className="border-b border-slate-100 text-left text-slate-500">
-              <th className="pb-1.5 font-medium">Bulan</th>
-              <th className="pb-1.5 text-right font-medium">Target</th>
-              <th className="pb-1.5 text-right font-medium">Realisasi</th>
-              <th className="pb-1.5 text-right font-medium">Selisih</th>
-              <th className="pb-1.5 text-right font-medium">Growth</th>
-              <th className="pb-1.5 text-center font-medium">Status</th>
+            <tr className={tableHeadRowClassName}>
+              <th className={`${tableHeadCellCompactClassName} text-left`}>Bulan</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Target</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Realisasi</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Selisih</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Growth</th>
+              <th className={`${tableHeadCellCompactClassName} text-center`}>Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableBodyStripedClassName}>
             {MONTHLY_REVENUE_TABLE.map((row) => (
-              <tr key={row.bulan} className="border-b border-slate-50">
+              <tr key={row.bulan}>
                 <td className="py-1 font-medium text-slate-700">{row.bulan}</td>
                 <td className="py-1 text-right text-slate-600">{row.target}</td>
                 <td className="py-1 text-right text-slate-600">{row.realisasi}</td>
@@ -135,22 +141,22 @@ export function MonthlyRevenueTable() {
 export function ExpenseRealizationTable() {
   return (
     <DetailCard title="Ringkasan Realisasi Belanja" subtitle="(dalam Juta Rupiah)">
-      <div className="mt-2 sq-scroll overflow-x-auto">
+      <div className={cn("mt-2", tableShellClassName)}>
         <table className="w-full min-w-[20rem] text-[0.5625rem]">
           <thead>
-            <tr className="bg-slate-50 text-left text-slate-500">
-              <th className="px-1.5 py-1 font-medium">Kode</th>
-              <th className="px-1.5 py-1 font-medium">Kelompok Belanja</th>
-              <th className="px-1.5 py-1 text-right font-medium">Pagu</th>
-              <th className="px-1.5 py-1 text-right font-medium">Realisasi</th>
-              <th className="px-1.5 py-1 text-right font-medium">Sisa</th>
-              <th className="px-1.5 py-1 text-right font-medium">%</th>
-              <th className="px-1.5 py-1 text-right font-medium">Menunggu</th>
+            <tr className={tableHeadRowClassName}>
+              <th className={`${tableHeadCellCompactClassName} text-left`}>Kode</th>
+              <th className={`${tableHeadCellCompactClassName} text-left`}>Kelompok Belanja</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Pagu</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Realisasi</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Sisa</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>%</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Menunggu</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableBodyStripedClassName}>
             {EXPENSE_REALIZATION_TABLE.map((row) => (
-              <tr key={row.kode} className="border-t border-slate-50">
+              <tr key={row.kode}>
                 <td className="px-1.5 py-1 text-slate-500">{row.kode}</td>
                 <td className="px-1.5 py-1 font-medium text-slate-700">{row.kelompok}</td>
                 <td className="px-1.5 py-1 text-right text-slate-600">{row.pagu}</td>
@@ -162,7 +168,7 @@ export function ExpenseRealizationTable() {
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-slate-200 bg-slate-50 font-bold">
+            <tr className="border-t-2 border-sky-200 bg-sky-50 font-bold">
               <td className="px-1.5 py-1.5" colSpan={2}>Total</td>
               <td className="px-1.5 py-1.5 text-right">{EXPENSE_TOTAL.pagu}</td>
               <td className="px-1.5 py-1.5 text-right">{EXPENSE_TOTAL.realisasi}</td>
@@ -183,10 +189,16 @@ export function SideSummaryTables() {
       <DetailCard title="Ringkasan Cash Flow" subtitle="(dalam Juta Rupiah)">
         <table className="mt-2 w-full text-[0.5625rem]">
           <tbody>
-            {CASH_FLOW_SUMMARY.map((row) => (
-              <tr key={row.label} className={row.highlight ? "bg-teal-50" : ""}>
-                <td className={`py-1 ${row.highlight ? "font-semibold text-[#0d9488]" : "text-slate-600"}`}>{row.label}</td>
-                <td className={`py-1 text-right font-semibold ${row.highlight ? "text-[#0d9488]" : "text-slate-800"}`}>{row.value}</td>
+            {CASH_FLOW_SUMMARY.map((row, i) => (
+              <tr
+                key={row.label}
+                className={tableStripeRowClassName(
+                  i,
+                  row.highlight ? "border-t-2 border-sky-200 bg-sky-50 font-semibold" : undefined
+                )}
+              >
+                <td className={`py-1 ${row.highlight ? "font-semibold text-sky-700" : "text-slate-600"}`}>{row.label}</td>
+                <td className={`py-1 text-right font-semibold ${row.highlight ? "text-sky-700" : "text-slate-800"}`}>{row.value}</td>
               </tr>
             ))}
           </tbody>
@@ -195,16 +207,16 @@ export function SideSummaryTables() {
 
       <DetailCard title="Pendapatan per Layanan" subtitle="(dalam Juta Rupiah)">
         <table className="mt-2 w-full text-[0.5625rem]">
-          <tbody>
+          <tbody className={tableBodyStripedClassName}>
             {REVENUE_BY_SERVICE.map((row) => (
-              <tr key={row.layanan} className="border-b border-slate-50">
+              <tr key={row.layanan}>
                 <td className="py-1 text-slate-600">{row.layanan}</td>
                 <td className="py-1 text-right font-medium text-slate-800">{row.value}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="font-bold">
+            <tr className="border-t-2 border-sky-200 bg-sky-50 font-bold">
               <td className="pt-1.5 text-slate-800">Total</td>
               <td className="pt-1.5 text-right text-slate-900">{REVENUE_BY_SERVICE_TOTAL}</td>
             </tr>

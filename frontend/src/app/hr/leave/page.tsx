@@ -3,6 +3,13 @@
 import { PageFrame } from "@/components/layout/PageFrame";
 import { Card } from "@/components/ui/Card";
 import {
+  tableBodyStripedClassName,
+  tableGridShellClassName,
+  tableHeadCellClassName,
+  tableHeadClassName,
+} from "@/components/ui/tableStyles";
+import { cn } from "@/lib/cn";
+import {
   createLeaveRequest,
   getLeaveRequests,
   getLeaveTypes,
@@ -167,18 +174,18 @@ export default function LeavePage() {
         </Card>
       )}
 
-      <Card variant="flat" padding={false} className="overflow-x-auto">
+      <div className={cn(tableGridShellClassName, "overflow-x-auto")}>
         <table className="min-w-[40rem] w-full text-sm">
-          <thead className="bg-slate-50 text-left text-slate-600">
+          <thead className={tableHeadClassName}>
             <tr>
-              <th className="px-4 py-3 font-medium">Karyawan</th>
-              <th className="px-4 py-3 font-medium">Jenis</th>
-              <th className="px-4 py-3 font-medium">Periode</th>
-              <th className="px-4 py-3 font-medium">Hari</th>
-              <th className="px-4 py-3 font-medium">Status</th>
+              <th className={tableHeadCellClassName}>Karyawan</th>
+              <th className={tableHeadCellClassName}>Jenis</th>
+              <th className={tableHeadCellClassName}>Periode</th>
+              <th className={tableHeadCellClassName}>Hari</th>
+              <th className={tableHeadCellClassName}>Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableBodyStripedClassName}>
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
@@ -193,7 +200,7 @@ export default function LeavePage() {
               </tr>
             ) : (
               requests.map((r) => (
-                <tr key={r.id} className="border-t border-slate-100">
+                <tr key={r.id}>
                   <td className="px-4 py-3">{r.employee?.name}</td>
                   <td className="px-4 py-3">{r.leave_type?.name}</td>
                   <td className="px-4 py-3">
@@ -210,7 +217,7 @@ export default function LeavePage() {
             )}
           </tbody>
         </table>
-      </Card>
+      </div>
     </PageFrame>
   );
 }

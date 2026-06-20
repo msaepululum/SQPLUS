@@ -1,6 +1,7 @@
 "use client";
 
 import { CARD_SHADOW } from "@/components/ui/Card";
+import { tableBodyStripedClassName, tableShellClassName } from "@/components/ui/tableStyles";
 import { cn } from "@/lib/cn";
 import type { AiToolOutput } from "@/types/ai.types";
 
@@ -75,14 +76,11 @@ export function AiResultCard({ toolName, output, className }: AiResultCardProps)
       )}
 
       {output.items && output.items.length > 0 && (
-        <div className="mt-3 overflow-x-auto">
+        <div className={tableShellClassName}>
           <table className="w-full text-left text-xs">
-            <tbody>
+            <tbody className={tableBodyStripedClassName}>
               {output.items.map((item, idx) => (
-                <tr
-                  key={idx}
-                  className="border-t border-sq-border/60 first:border-t-0 dark:border-slate-700"
-                >
+                <tr key={idx}>
                   {Object.entries(item).map(([key, val]) => (
                     <td key={key} className="py-1.5 pr-3 text-sq-slate">
                       <span className="font-medium text-sq-dark dark:text-slate-200">

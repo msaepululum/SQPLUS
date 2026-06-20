@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { redirect } from "next/navigation";
 
 export default function FinanceBudgetPage() {
-  return (
-    <PlaceholderModule
-      title="Anggaran"
-      subtitle="Perencanaan, alokasi, dan monitoring anggaran rumah sakit"
-    />
-  );
+  redirect("/finance/budget/referensi");
 }

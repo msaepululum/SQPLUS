@@ -12,6 +12,7 @@ import { HR_SUB_NAV } from "./hr-navigation";
 export type NavChild = {
   labelKey: string;
   href: string;
+  children?: readonly NavChild[];
 };
 
 export type MenuItem = {

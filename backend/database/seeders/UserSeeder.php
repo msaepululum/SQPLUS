@@ -73,8 +73,35 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Alur Cuti',
                 'director_threshold' => null,
+                'is_active' => true,
                 'steps' => [
                     ['role' => 'hr_manager', 'label' => 'Manajer SDM'],
+                ],
+            ]
+        );
+
+        ApprovalFlow::query()->updateOrCreate(
+            ['document_type' => 'budget_revision'],
+            [
+                'name' => 'Alur Revisi Pagu',
+                'director_threshold' => 100000000,
+                'is_active' => true,
+                'steps' => [
+                    ['role' => 'finance_manager', 'label' => 'Manajer Keuangan'],
+                    ['role' => 'director', 'label' => 'Direktur'],
+                ],
+            ]
+        );
+
+        ApprovalFlow::query()->updateOrCreate(
+            ['document_type' => 'budget_shift'],
+            [
+                'name' => 'Alur Pergeseran Pagu',
+                'director_threshold' => 100000000,
+                'is_active' => true,
+                'steps' => [
+                    ['role' => 'finance_manager', 'label' => 'Manajer Keuangan'],
+                    ['role' => 'director', 'label' => 'Direktur'],
                 ],
             ]
         );

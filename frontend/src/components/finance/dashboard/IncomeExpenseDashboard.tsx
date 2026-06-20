@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { FinanceDashboardTabs } from "@/components/finance/dashboard/FinanceDashboardTabs";
 import { MainSummaryDashboard } from "@/components/finance/dashboard/main-summary/MainSummaryDashboard";
-import { IncomeExpenseChart } from "@/components/finance/dashboard/IncomeExpenseChart";
-import { IncomeBreakdownTable } from "@/components/finance/dashboard/IncomeBreakdownTable";
-import { ExpenseBreakdownTable } from "@/components/finance/dashboard/ExpenseBreakdownTable";
+import { BelanjaDashboard } from "@/components/finance/dashboard/belanja/BelanjaDashboard";
+import { KasBankDashboard } from "@/components/finance/dashboard/kas-bank/KasBankDashboard";
+import { LaporanKeuanganDashboard } from "@/components/finance/dashboard/laporan-keuangan/LaporanKeuanganDashboard";
+import { PiutangDashboard } from "@/components/finance/dashboard/piutang/PiutangDashboard";
+import { PenerimaanDashboard } from "@/components/finance/dashboard/penerimaan/PenerimaanDashboard";
 import { FINANCE_DASHBOARD_TABS } from "@/constants/finance-dashboard";
 
 function TabPlaceholder({ tabId }: { tabId: number }) {
@@ -28,29 +30,17 @@ export function IncomeExpenseDashboard() {
 
       {activeTab === 1 && <MainSummaryDashboard />}
 
-      {activeTab === 2 && (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-7">
-            <IncomeExpenseChart />
-          </div>
-          <div className="xl:col-span-5">
-            <IncomeBreakdownTable />
-          </div>
-        </div>
-      )}
+      {activeTab === 2 && <PenerimaanDashboard />}
 
-      {activeTab === 3 && (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-7">
-            <IncomeExpenseChart />
-          </div>
-          <div className="xl:col-span-5">
-            <ExpenseBreakdownTable />
-          </div>
-        </div>
-      )}
+      {activeTab === 3 && <BelanjaDashboard />}
 
-      {activeTab > 3 && <TabPlaceholder tabId={activeTab} />}
+      {activeTab === 4 && <PiutangDashboard />}
+
+      {activeTab === 5 && <KasBankDashboard />}
+
+      {activeTab === 6 && <LaporanKeuanganDashboard />}
+
+      {activeTab > 6 && <TabPlaceholder tabId={activeTab} />}
     </div>
   );
 }

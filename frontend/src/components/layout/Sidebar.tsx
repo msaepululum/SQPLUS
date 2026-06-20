@@ -6,6 +6,7 @@ import { useTranslation } from "@/components/providers/LocaleProvider";
 import { HOME_MENU, MAIN_MENU } from "@/constants/menu";
 import { SidebarNavGroup } from "@/components/layout/SidebarNavGroup";
 import { cn } from "@/lib/cn";
+import { flattenNavItems } from "@/lib/nav-utils";
 import {
   ChevronLeft,
   LogOut,
@@ -134,7 +135,10 @@ export function Sidebar({
               item={item}
               label={t(item.labelKey)}
               childLabels={Object.fromEntries(
-                item.children.map((child) => [child.labelKey, t(child.labelKey)])
+                flattenNavItems(item.children).map((child) => [
+                  child.labelKey,
+                  t(child.labelKey),
+                ])
               )}
               pathname={pathname}
               collapsed={collapsed}

@@ -12,6 +12,12 @@ import {
   ASSET_MINI,
   INVENTORY_BARS,
 } from "@/constants/beranda";
+import {
+  tableBodyStripedClassName,
+  tableHeadCellCompactClassName,
+  tableHeadRowClassName,
+  tableShellClassName,
+} from "@/components/ui/tableStyles";
 
 const PRIORITY_BADGE = {
   Tinggi: "danger" as const,
@@ -87,19 +93,19 @@ export function InsightAsset() {
           <p className="mb-2 text-[11px] font-medium text-sq-slate">
             Alert Asset & Persediaan
           </p>
-          <div className="overflow-x-auto">
+          <div className={tableShellClassName}>
             <table className="w-full min-w-[14rem] text-[10px]">
               <thead>
-                <tr className="border-b border-sq-border text-left text-sq-slate dark:border-slate-800">
-                  <th className="pb-1.5 font-medium">Jenis</th>
-                  <th className="pb-1.5 font-medium">Deskripsi</th>
-                  <th className="pb-1.5 font-medium">Prioritas</th>
-                  <th className="pb-1.5 text-right font-medium">Jml</th>
+                <tr className={tableHeadRowClassName}>
+                  <th className={`${tableHeadCellCompactClassName} text-left`}>Jenis</th>
+                  <th className={`${tableHeadCellCompactClassName} text-left`}>Deskripsi</th>
+                  <th className={`${tableHeadCellCompactClassName} text-left`}>Prioritas</th>
+                  <th className={`${tableHeadCellCompactClassName} text-right`}>Jml</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={tableBodyStripedClassName}>
                 {ASSET_ALERTS.map((a) => (
-                  <tr key={a.deskripsi} className="border-b border-sq-border/60 dark:border-slate-800/60">
+                  <tr key={a.deskripsi}>
                     <td className="py-1.5 text-sq-dark dark:text-slate-200">{a.jenis}</td>
                     <td className="py-1.5 text-sq-slate">{a.deskripsi}</td>
                     <td className="py-1.5">

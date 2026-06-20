@@ -3,6 +3,13 @@
 import { PageFrame } from "@/components/layout/PageFrame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { CardGrid } from "@/components/ui/CardGrid";
+import {
+  tableBodyStripedClassName,
+  tableGridShellClassName,
+  tableHeadCellClassName,
+  tableHeadClassName,
+} from "@/components/ui/tableStyles";
+import { cn } from "@/lib/cn";
 import { getPayrollPeriod, getPayrollPeriods } from "@/services/hr";
 import type { PayrollPeriod } from "@/types/hr";
 import { useEffect, useState } from "react";
@@ -67,7 +74,7 @@ export default function PayrollPage() {
 
           <div className="lg:col-span-2">
             {selected ? (
-              <Card variant="flat" padding={false} className="overflow-x-auto">
+              <Card variant="flat" padding={false} className={cn(tableGridShellClassName, "overflow-x-auto")}>
                 <CardHeader className="border-b border-slate-100 px-4 py-3 sm:px-5">
                   <CardTitle>{selected.name}</CardTitle>
                   <CardDescription>
@@ -76,18 +83,18 @@ export default function PayrollPage() {
                 </CardHeader>
                 <CardContent scrollable>
                 <table className="min-w-[40rem] w-full text-sm">
-                  <thead className="bg-slate-50 text-left text-slate-600">
+                  <thead className={tableHeadClassName}>
                     <tr>
-                      <th className="px-4 py-3 font-medium">Karyawan</th>
-                      <th className="px-4 py-3 font-medium">Gaji pokok</th>
-                      <th className="px-4 py-3 font-medium">Tunjangan</th>
-                      <th className="px-4 py-3 font-medium">Potongan</th>
-                      <th className="px-4 py-3 font-medium">Bersih</th>
+                      <th className={tableHeadCellClassName}>Karyawan</th>
+                      <th className={tableHeadCellClassName}>Gaji pokok</th>
+                      <th className={tableHeadCellClassName}>Tunjangan</th>
+                      <th className={tableHeadCellClassName}>Potongan</th>
+                      <th className={tableHeadCellClassName}>Bersih</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className={tableBodyStripedClassName}>
                     {(selected.items ?? []).map((item) => (
-                      <tr key={item.id} className="border-t border-slate-100">
+                      <tr key={item.id}>
                         <td className="px-4 py-3">{item.employee?.name}</td>
                         <td className="px-4 py-3">
                           {formatRupiah(item.base_salary)}

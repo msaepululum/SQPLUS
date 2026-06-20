@@ -29,8 +29,8 @@ export function RevenueDetailHeader() {
   return (
     <div className="space-y-3">
       <PageFrame
-        title="Detail Total Pendapatan"
-        description="Rincian pendapatan rumah sakit berdasarkan sumber, layanan, poli, dan dokter."
+        title="Dashboard Pendapatan"
+        description="Ringkasan pendapatan rumah sakit — sumber, layanan, poli, dan tren harian."
         actions={EXPORT_ACTIONS}
       />
 

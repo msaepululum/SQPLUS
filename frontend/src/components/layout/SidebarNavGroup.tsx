@@ -1,6 +1,7 @@
 "use client";
 
 import type { MenuItem } from "@/constants/menu";
+import { SidebarNavNestedItem } from "@/components/layout/SidebarNavNestedItem";
 import { isModuleChildActive } from "@/lib/nav-utils";
 import { cn } from "@/lib/cn";
 import { ChevronDown } from "lucide-react";
@@ -80,8 +81,22 @@ export function SidebarNavGroup({
       {open && (
         <ul className="ml-4 flex flex-col gap-0.5 border-l border-white/10 py-0.5 pl-2">
           {children.map((child) => {
-            const active = isModuleChildActive(pathname, child.href);
             const childLabel = childLabels[child.labelKey] ?? child.labelKey;
+
+            if (child.children && child.children.length > 0) {
+              return (
+                <SidebarNavNestedItem
+                  key={child.href}
+                  child={child}
+                  label={childLabel}
+                  childLabels={childLabels}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                />
+              );
+            }
+
+            const active = isModuleChildActive(pathname, child.href);
 
             return (
               <li key={child.href}>

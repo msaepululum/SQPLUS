@@ -1,7 +1,13 @@
 "use client";
 
 import { PageFrame } from "@/components/layout/PageFrame";
-import { Card } from "@/components/ui/Card";
+import {
+  tableBodyStripedClassName,
+  tableGridShellClassName,
+  tableHeadCellClassName,
+  tableHeadClassName,
+} from "@/components/ui/tableStyles";
+import { cn } from "@/lib/cn";
 import { getAttendance } from "@/services/hr";
 import type { AttendanceRecord } from "@/types/hr";
 import { useEffect, useState } from "react";
@@ -40,18 +46,18 @@ export default function AttendancePage() {
         />
       </div>
 
-      <Card variant="flat" padding={false} className="overflow-x-auto">
+      <div className={cn(tableGridShellClassName, "overflow-x-auto")}>
         <table className="min-w-[40rem] w-full text-sm">
-          <thead className="bg-slate-50 text-left text-slate-600">
+          <thead className={tableHeadClassName}>
             <tr>
-              <th className="px-4 py-3 font-medium">Kode</th>
-              <th className="px-4 py-3 font-medium">Nama</th>
-              <th className="px-4 py-3 font-medium">Check-in</th>
-              <th className="px-4 py-3 font-medium">Check-out</th>
-              <th className="px-4 py-3 font-medium">Status</th>
+              <th className={tableHeadCellClassName}>Kode</th>
+              <th className={tableHeadCellClassName}>Nama</th>
+              <th className={tableHeadCellClassName}>Check-in</th>
+              <th className={tableHeadCellClassName}>Check-out</th>
+              <th className={tableHeadCellClassName}>Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tableBodyStripedClassName}>
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
@@ -66,7 +72,7 @@ export default function AttendancePage() {
               </tr>
             ) : (
               records.map((r) => (
-                <tr key={r.id} className="border-t border-slate-100">
+                <tr key={r.id}>
                   <td className="px-4 py-3 font-mono text-xs">
                     {r.employee?.employee_code}
                   </td>
@@ -81,7 +87,7 @@ export default function AttendancePage() {
             )}
           </tbody>
         </table>
-      </Card>
+      </div>
     </PageFrame>
   );
 }

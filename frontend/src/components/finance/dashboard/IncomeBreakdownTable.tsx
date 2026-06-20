@@ -1,27 +1,34 @@
 import { INCOME_BREAKDOWN, formatRupiahFull } from "@/constants/finance-dashboard";
 import { cardClassName } from "@/components/ui/Card";
+import { cn } from "@/lib/cn";
+import {
+  tableBodyStripedClassName,
+  tableHeadCellCompactClassName,
+  tableHeadRowClassName,
+  tableShellClassName,
+} from "@/components/ui/tableStyles";
 
 export function IncomeBreakdownTable() {
   return (
     <div className={cardClassName({ variant: "default" })}>
       <h3 className="text-sm font-semibold text-slate-800">Rincian Penerimaan per Bulan</h3>
 
-      <div className="mt-3 sq-scroll overflow-x-auto">
+      <div className={cn("mt-3", tableShellClassName)}>
         <table className="w-full min-w-[24rem] text-[0.6875rem]">
           <thead>
-            <tr className="bg-[#0d9488] text-white">
-              <th className="px-2 py-1.5 text-left font-semibold">Bulan</th>
-              <th className="px-2 py-1.5 text-right font-semibold">Pend. Jasa Layanan</th>
-              <th className="px-2 py-1.5 text-right font-semibold">Pend. APBN</th>
-              <th className="px-2 py-1.5 text-right font-semibold">Pend. Lain-lain</th>
-              <th className="px-2 py-1.5 text-right font-semibold">Total Penerimaan</th>
+            <tr className={tableHeadRowClassName}>
+              <th className={`${tableHeadCellCompactClassName} text-left`}>Bulan</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Pend. Jasa Layanan</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Pend. APBN</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Pend. Lain-lain</th>
+              <th className={`${tableHeadCellCompactClassName} text-right`}>Total Penerimaan</th>
             </tr>
           </thead>
-          <tbody>
-            {INCOME_BREAKDOWN.map((row, i) => {
+          <tbody className={tableBodyStripedClassName}>
+            {INCOME_BREAKDOWN.map((row) => {
               const total = row.jasaLayanan + row.apbn + row.lainLain;
               return (
-                <tr key={row.month} className={i % 2 === 0 ? "bg-white" : "bg-slate-50/80"}>
+                <tr key={row.month}>
                   <td className="px-2 py-1.5 font-medium text-slate-700">{row.month}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums text-slate-600">
                     {formatRupiahFull(row.jasaLayanan)}

@@ -1,6 +1,7 @@
 import type { Crumb } from "@/components/layout/Breadcrumbs";
 import { FINANCE_SUB_NAV } from "@/constants/finance-navigation";
 import { HR_SUB_NAV } from "@/constants/hr-navigation";
+import { resolveNavTrail } from "@/lib/nav-utils";
 
 type TranslateFn = (key: string) => string;
 
@@ -49,14 +50,12 @@ function homeCrumb(t: TranslateFn): Crumb {
 
 function resolveChildLabel(
   pathname: string,
-  children: readonly { labelKey: string; href: string }[],
+  children: readonly { labelKey: string; href: string; children?: readonly { labelKey: string; href: string }[] }[],
   t: TranslateFn
-): string | null {
-  const match = children.find(
-    (child) =>
-      pathname === child.href || pathname.startsWith(`${child.href}/`)
-  );
-  return match ? t(match.labelKey) : null;
+): { crumbs: Crumb[] } | null {
+  const trail = resolveNavTrail(pathname, children, t);
+  if (!trail?.length) return null;
+  return { crumbs: trail };
 }
 
 export function buildPageBreadcrumbs(pathname: string, t: TranslateFn): Crumb[] {
@@ -74,9 +73,9 @@ export function buildPageBreadcrumbs(pathname: string, t: TranslateFn): Crumb[] 
     const crumbs: Crumb[] = [home, { label: t(mod.moduleKey), href: mod.href }];
 
     if (mod.children) {
-      const childLabel = resolveChildLabel(pathname, mod.children, t);
-      if (childLabel) {
-        crumbs.push({ label: childLabel });
+      const resolved = resolveChildLabel(pathname, mod.children, t);
+      if (resolved) {
+        crumbs.push(...resolved.crumbs);
         return crumbs;
       }
     }

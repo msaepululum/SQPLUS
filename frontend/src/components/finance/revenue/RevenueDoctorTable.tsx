@@ -1,4 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import {
+  tableBodyStripedClassName,
+  tableHeadCellClassName,
+  tableHeadRowClassName,
+  tableShellClassName,
+} from "@/components/ui/tableStyles";
 
 const DOCTORS = [
   { rank: 1, name: "dr. Andi Wijaya, Sp.PD", poli: "Penyakit Dalam", visits: 842, revenue: "Rp 8,9 M", contrib: "6,9%" },
@@ -21,21 +27,21 @@ export function RevenueDoctorTable() {
         </button>
       </CardHeader>
       <CardContent scrollable>
-        <div className="overflow-hidden rounded-lg border border-slate-100">
+        <div className={tableShellClassName}>
           <table className="w-full min-w-[36rem] text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs text-slate-500">
-                <th className="px-3 py-2.5 font-medium">#</th>
-                <th className="px-3 py-2.5 font-medium">Dokter</th>
-                <th className="px-3 py-2.5 font-medium">Poli</th>
-                <th className="px-3 py-2.5 font-medium text-right">Kunjungan</th>
-                <th className="px-3 py-2.5 font-medium text-right">Pendapatan</th>
-                <th className="px-3 py-2.5 font-medium text-right">Kontribusi</th>
+              <tr className={tableHeadRowClassName}>
+                <th className={tableHeadCellClassName}>#</th>
+                <th className={tableHeadCellClassName}>Dokter</th>
+                <th className={tableHeadCellClassName}>Poli</th>
+                <th className={`${tableHeadCellClassName} text-right`}>Kunjungan</th>
+                <th className={`${tableHeadCellClassName} text-right`}>Pendapatan</th>
+                <th className={`${tableHeadCellClassName} text-right`}>Kontribusi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className={tableBodyStripedClassName}>
               {DOCTORS.map((d) => (
-                <tr key={d.rank} className="border-t border-slate-50 hover:bg-slate-50/50">
+                <tr key={d.rank}>
                   <td className="px-3 py-2.5">
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-700">
                       {d.rank}

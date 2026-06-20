@@ -37,7 +37,7 @@ export function LoginBranding() {
   const { t } = useTranslation();
 
   return (
-    <aside className="relative hidden h-full shrink-0 overflow-hidden bg-[#071A3D] lg:flex lg:w-[42%] xl:w-[40%]">
+    <aside className="relative hidden h-full shrink-0 overflow-hidden bg-[#071A3D] lg:flex lg:w-[46%] xl:w-[44%] 2xl:w-[42%]">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[46%]">
         <Image
           src="/images/hospital.png"
@@ -54,42 +54,42 @@ export function LoginBranding() {
         <div className="absolute inset-0 bg-[#10B9A6]/10 mix-blend-color" />
       </div>
 
-      <div className="relative z-10 flex h-full min-h-0 flex-col px-7 py-6 xl:px-9 xl:py-7">
+      <div className="relative z-10 flex h-full min-h-0 flex-col px-7 py-6 xl:px-10 xl:py-8 2xl:px-12 2xl:py-10">
         <header className="shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-[1.35rem] font-bold leading-none tracking-tight text-white xl:text-2xl">
+          <div className="flex items-center gap-2 xl:gap-3">
+            <span className="text-[1.35rem] font-bold leading-none tracking-tight text-white xl:text-2xl 2xl:text-[1.75rem]">
               SQ<span className="text-[#10B9A6]">+</span>
             </span>
-            <span className="text-[10px] leading-tight text-slate-400 xl:text-[11px]">
+            <span className="text-[10px] leading-tight text-slate-400 xl:text-xs 2xl:text-sm">
               {t("common.appSubtitle")}
             </span>
           </div>
         </header>
 
-        <div className="mt-5 shrink-0 max-w-[22rem] xl:mt-6">
-          <h1 className="text-[1.5rem] font-bold leading-[1.2] tracking-tight text-white xl:text-[1.75rem]">
+        <div className="mt-5 shrink-0 max-w-[22rem] xl:mt-6 xl:max-w-[28rem] 2xl:max-w-[32rem]">
+          <h1 className="text-[1.5rem] font-bold leading-[1.2] tracking-tight text-white xl:text-[1.875rem] 2xl:text-[2.125rem]">
             {t("branding.heroTitle")}{" "}
             <span className="text-[#10B9A6]">{t("branding.heroHighlight")}</span>{" "}
             {t("branding.heroTitleEnd")}
           </h1>
-          <p className="mt-2.5 text-[13px] leading-snug text-slate-400 xl:mt-3 xl:text-sm">
+          <p className="mt-2.5 text-[13px] leading-snug text-slate-400 xl:mt-3 xl:text-[15px] 2xl:text-base">
             {t("branding.heroDescription")}
           </p>
         </div>
 
-        <ul className="mt-4 shrink-0 space-y-2.5 xl:mt-5 xl:space-y-3">
+        <ul className="mt-4 shrink-0 space-y-2.5 xl:mt-5 xl:max-w-[28rem] xl:space-y-3 2xl:max-w-[32rem] 2xl:space-y-3.5">
           {FEATURE_KEYS.map((item) => {
             const Icon = item.icon;
             return (
-              <li key={item.titleKey} className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#0B1D5D]/70 text-[#10B9A6] ring-1 ring-white/10 xl:h-9 xl:w-9 xl:rounded-lg">
-                  <Icon className="h-3.5 w-3.5 xl:h-4 xl:w-4" strokeWidth={2} />
+              <li key={item.titleKey} className="flex items-center gap-2.5 xl:gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#0B1D5D]/70 text-[#10B9A6] ring-1 ring-white/10 xl:h-10 xl:w-10 xl:rounded-lg 2xl:h-11 2xl:w-11">
+                  <Icon className="h-3.5 w-3.5 xl:h-[1.125rem] xl:w-[1.125rem] 2xl:h-5 2xl:w-5" strokeWidth={2} />
                 </span>
                 <span className="min-w-0">
-                  <p className="text-[13px] font-semibold leading-tight text-white xl:text-sm">
+                  <p className="text-[13px] font-semibold leading-tight text-white xl:text-[15px] 2xl:text-base">
                     {t(item.titleKey)}
                   </p>
-                  <p className="text-[11px] leading-snug text-slate-400 xl:text-xs">
+                  <p className="text-[11px] leading-snug text-slate-400 xl:text-[13px] 2xl:text-sm">
                     {t(item.descriptionKey)}
                   </p>
                 </span>
@@ -101,10 +101,10 @@ export function LoginBranding() {
         <div className="min-h-0 flex-1" aria-hidden />
 
         <footer className="shrink-0 pb-1">
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] text-slate-400 xl:text-[11px]">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] text-slate-400 xl:text-xs 2xl:text-sm">
             <span className="inline-flex items-center gap-1.5">
               <BadgeCheck
-                className="h-3 w-3 text-[#10B9A6] xl:h-3.5 xl:w-3.5"
+                className="h-3 w-3 text-[#10B9A6] xl:h-4 xl:w-4"
                 strokeWidth={2}
               />
               {t("branding.isoBadge")}

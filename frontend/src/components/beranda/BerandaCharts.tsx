@@ -32,11 +32,13 @@ export function DonutChart({
   segments,
   centerLabel,
   centerSub,
+  centerClassName,
   size = 120,
 }: {
   segments: { label: string; pct: number; color: string }[];
   centerLabel: string;
   centerSub?: string;
+  centerClassName?: string;
   size?: number;
 }) {
   const r = 42;
@@ -70,7 +72,7 @@ export function DonutChart({
         })}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-sm font-bold text-slate-900">{centerLabel}</span>
+        <span className={cn("text-sm font-bold", centerClassName ?? "text-slate-900")}>{centerLabel}</span>
         {centerSub && (
           <span className="text-[10px] text-slate-500">{centerSub}</span>
         )}

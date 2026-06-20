@@ -29,8 +29,14 @@ export function LoginFormCard() {
     setSubmitting(true);
     try {
       await login(noAbsen, password);
-    } catch {
-      setError(t("login.errorInvalid"));
+    } catch (err) {
+      if (err instanceof TypeError) {
+        setError(t("login.errorNetwork"));
+      } else if (err instanceof Error && err.message) {
+        setError(err.message);
+      } else {
+        setError(t("login.errorInvalid"));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -75,36 +81,36 @@ export function LoginFormCard() {
       </header>
 
       {/* Desktop language */}
-      <div className="hidden shrink-0 justify-end px-8 pt-6 lg:flex">
+      <div className="hidden shrink-0 justify-end px-8 pt-6 lg:flex xl:px-12 xl:pt-8 2xl:px-16">
         <LanguageSwitcher />
       </div>
 
       {/* Form — center di mobile & desktop, scroll saat keyboard */}
-      <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(2.75rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,env(safe-area-inset-top))] sm:py-4 sm:pb-[max(3rem,env(safe-area-inset-bottom))] sm:pt-[max(4.75rem,env(safe-area-inset-top))] lg:overflow-hidden lg:px-8 lg:py-0 lg:pb-0 lg:pt-0">
-        <div className="my-auto w-full max-w-[400px]">
-          <div className="rounded-2xl border border-sq-border bg-white p-4 shadow-[0_8px_30px_rgba(7,26,61,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-6 lg:shadow-[0_8px_30px_rgba(7,26,61,0.08)]">
-          <p className="text-xs text-sq-slate">{t("login.welcome")}</p>
-          <h1 className="mt-0.5 text-xl font-bold text-[#071A3D] dark:text-white sm:text-2xl">
+      <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(2.75rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,env(safe-area-inset-top))] sm:py-4 sm:pb-[max(3rem,env(safe-area-inset-bottom))] sm:pt-[max(4.75rem,env(safe-area-inset-top))] lg:overflow-hidden lg:px-10 lg:py-0 lg:pb-0 lg:pt-0 xl:px-14 2xl:px-20">
+        <div className="my-auto w-full max-w-[min(100%,25rem)] sm:max-w-[26rem] lg:max-w-[clamp(26rem,34vw,36rem)]">
+          <div className="rounded-2xl border border-sq-border bg-white p-4 shadow-[0_8px_30px_rgba(7,26,61,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-6 lg:shadow-[0_8px_30px_rgba(7,26,61,0.08)] xl:p-8 2xl:p-10">
+          <p className="text-xs text-sq-slate xl:text-sm">{t("login.welcome")}</p>
+          <h1 className="mt-0.5 text-xl font-bold text-[#071A3D] dark:text-white sm:text-2xl xl:text-3xl 2xl:text-[2.125rem]">
             {t("login.title")}{" "}
             <span className="text-[#10B9A6]">
               SQ<span className="text-[#2563EB]">+</span>
             </span>
           </h1>
-          <p className="mt-1.5 text-[13px] leading-snug text-sq-slate">
+          <p className="mt-1.5 text-[13px] leading-snug text-sq-slate xl:mt-2 xl:text-[15px] 2xl:text-base">
             {t("login.subtitle")}
           </p>
 
-          <form className="mt-5 space-y-3.5" onSubmit={handleSubmit}>
+          <form className="mt-5 space-y-3.5 xl:mt-6 xl:space-y-4" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="login-employee-number"
-                className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200"
+                className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200 xl:mb-1.5 xl:text-sm"
               >
                 {t("login.employeeNumberLabel")}
               </label>
               <div className="relative">
                 <User
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sq-slate"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sq-slate xl:left-3.5 xl:h-[1.125rem] xl:w-[1.125rem]"
                   strokeWidth={2}
                 />
                 <input
@@ -117,7 +123,7 @@ export function LoginFormCard() {
                   value={noAbsen}
                   onChange={(e) => setNoAbsen(e.target.value)}
                   placeholder={t("login.employeeNumberPlaceholder")}
-                  className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-3 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-3 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 xl:h-11 xl:rounded-xl xl:pl-11 xl:pr-4 xl:text-base"
                 />
               </div>
             </div>
@@ -125,13 +131,13 @@ export function LoginFormCard() {
             <div>
               <label
                 htmlFor="login-password"
-                className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200"
+                className="mb-1 block text-xs font-medium text-[#071A3D] dark:text-slate-200 xl:mb-1.5 xl:text-sm"
               >
                 {t("login.passwordLabel")}
               </label>
               <div className="relative">
                 <Lock
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sq-slate"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sq-slate xl:left-3.5 xl:h-[1.125rem] xl:w-[1.125rem]"
                   strokeWidth={2}
                 />
                 <input
@@ -143,7 +149,7 @@ export function LoginFormCard() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t("login.passwordPlaceholder")}
-                  className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-10 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="h-9 w-full rounded-lg border border-sq-border bg-white pl-10 pr-10 text-sm text-[#071A3D] placeholder:text-sq-slate/60 focus:border-[#2563EB] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 xl:h-11 xl:rounded-xl xl:pl-11 xl:pr-12 xl:text-base"
                 />
                 <button
                   type="button"
@@ -165,7 +171,7 @@ export function LoginFormCard() {
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              <label className="inline-flex cursor-pointer items-center gap-2 text-xs text-sq-slate">
+              <label className="inline-flex cursor-pointer items-center gap-2 text-xs text-sq-slate xl:text-sm">
                 <input
                   type="checkbox"
                   checked={remember}
@@ -176,7 +182,7 @@ export function LoginFormCard() {
               </label>
               <button
                 type="button"
-                className="text-xs font-medium text-[#2563EB] hover:underline"
+                className="text-xs font-medium text-[#2563EB] hover:underline xl:text-sm"
               >
                 {t("login.forgotPassword")}
               </button>
@@ -184,7 +190,7 @@ export function LoginFormCard() {
 
             {error && (
               <p
-                className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-500/10 dark:text-red-300"
+                className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-500/10 dark:text-red-300 xl:text-sm"
                 role="alert"
               >
                 {error}
@@ -194,19 +200,19 @@ export function LoginFormCard() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#2563EB] to-[#10B9A6] text-xs font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#2563EB] to-[#10B9A6] text-xs font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 xl:h-11 xl:rounded-xl xl:text-sm"
             >
-              <Lock className="h-4 w-4" strokeWidth={2} />
+              <Lock className="h-4 w-4 xl:h-[1.125rem] xl:w-[1.125rem]" strokeWidth={2} />
               {submitting ? t("login.submitting") : t("login.submit")}
             </button>
           </form>
 
-          <div className="mt-4 flex gap-2.5 rounded-lg border border-blue-100 bg-blue-50/90 px-3 py-2.5 dark:border-blue-900/40 dark:bg-blue-500/10">
+          <div className="mt-4 flex gap-2.5 rounded-lg border border-blue-100 bg-blue-50/90 px-3 py-2.5 dark:border-blue-900/40 dark:bg-blue-500/10 xl:mt-5 xl:gap-3 xl:px-4 xl:py-3">
             <Shield
-              className="mt-0.5 h-4 w-4 shrink-0 text-[#2563EB] dark:text-sky-400"
+              className="mt-0.5 h-4 w-4 shrink-0 text-[#2563EB] dark:text-sky-400 xl:h-5 xl:w-5"
               strokeWidth={2}
             />
-            <p className="text-[11px] leading-relaxed text-sq-slate dark:text-slate-400">
+            <p className="text-[11px] leading-relaxed text-sq-slate dark:text-slate-400 xl:text-xs 2xl:text-sm">
               {t("login.securityNotice")}
             </p>
           </div>
