@@ -11,6 +11,9 @@ class RevenueCategoryTarget extends Model
         'budget_year_id',
         'category_id',
         'target_amount',
+        'pergeseran_amount',
+        'perubahan_amount',
+        'plan_amount',
         'corrected_amount',
         'corrected_at',
     ];
@@ -19,6 +22,9 @@ class RevenueCategoryTarget extends Model
     {
         return [
             'target_amount' => 'decimal:4',
+            'pergeseran_amount' => 'decimal:4',
+            'perubahan_amount' => 'decimal:4',
+            'plan_amount' => 'decimal:4',
             'corrected_amount' => 'decimal:4',
             'corrected_at' => 'datetime',
         ];

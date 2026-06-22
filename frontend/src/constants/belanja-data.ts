@@ -1,3 +1,9 @@
+import {
+  EXPENDITURE_REQUEST_STATUSES,
+  EXPENDITURE_REQUEST_STATUS_LABELS_ID,
+  type ExpenditureRequestStatusId,
+} from "./expenditure-status";
+
 export type BelanjaFilters = {
   tahun: string;
   bulan: string;
@@ -68,13 +74,10 @@ export const BELANJA_KATEGORI_OPTIONS = [
 
 export const BELANJA_STATUS_OPTIONS = [
   { value: "all", label: "Semua Status" },
-  { value: "draft", label: "Draft" },
-  { value: "diajukan", label: "Diajukan" },
-  { value: "diverifikasi", label: "Diverifikasi" },
-  { value: "disetujui", label: "Disetujui" },
-  { value: "menunggu-pembayaran", label: "Menunggu Pembayaran" },
-  { value: "selesai", label: "Selesai" },
-  { value: "ditolak", label: "Ditolak" },
+  ...EXPENDITURE_REQUEST_STATUSES.map((s) => ({
+    value: s.id,
+    label: EXPENDITURE_REQUEST_STATUS_LABELS_ID[s.id],
+  })),
 ];
 
 export type BelanjaKpi = {
@@ -260,15 +263,24 @@ export type BelanjaProcessStatus = {
   color: string;
 };
 
-export const BELANJA_PROCESS_STATUS: BelanjaProcessStatus[] = [
-  { label: "Draft", count: 68, color: "bg-slate-400" },
-  { label: "Diajukan", count: 74, color: "bg-sky-500" },
-  { label: "Diverifikasi", count: 112, color: "bg-violet-500" },
-  { label: "Disetujui", count: 156, color: "bg-blue-500" },
-  { label: "Menunggu Pembayaran", count: 78, color: "bg-amber-500" },
-  { label: "Selesai", count: 542, color: "bg-emerald-500" },
-  { label: "Ditolak", count: 27, color: "bg-red-500" },
-];
+export const BELANJA_PROCESS_STATUS: BelanjaProcessStatus[] = EXPENDITURE_REQUEST_STATUSES.map((s) => ({
+  label: EXPENDITURE_REQUEST_STATUS_LABELS_ID[s.id],
+  count:
+    s.id === "draft"
+      ? 68
+      : s.id === "diajukan"
+        ? 74
+        : s.id === "disetujui"
+          ? 156
+          : s.id === "menunggu-pembayaran"
+            ? 78
+            : s.id === "sudah-dibayar"
+              ? 542
+              : s.id === "ditolak"
+                ? 27
+                : 12,
+  color: s.chartColor,
+}));
 
 export type BelanjaTransaction = {
   noDokumen: string;
@@ -276,8 +288,7 @@ export type BelanjaTransaction = {
   kategori: string;
   sumberDana: string;
   nominal: string;
-  status: string;
-  statusColor: string;
+  statusId: ExpenditureRequestStatusId;
   tanggal: string;
   pic: string;
 };
@@ -289,8 +300,7 @@ export const BELANJA_TRANSACTIONS: BelanjaTransaction[] = [
     kategori: "Belanja Barang",
     sumberDana: "RM",
     nominal: "Rp 245,6 jt",
-    status: "Menunggu Pembayaran",
-    statusColor: "bg-amber-100 text-amber-800",
+    statusId: "menunggu-pembayaran",
     tanggal: "19 Jun 2025",
     pic: "Budi Santoso",
   },
@@ -300,8 +310,7 @@ export const BELANJA_TRANSACTIONS: BelanjaTransaction[] = [
     kategori: "Belanja Jasa",
     sumberDana: "BLU",
     nominal: "Rp 128,4 jt",
-    status: "Disetujui",
-    statusColor: "bg-blue-100 text-blue-800",
+    statusId: "disetujui",
     tanggal: "18 Jun 2025",
     pic: "Siti Rahayu",
   },
@@ -311,8 +320,7 @@ export const BELANJA_TRANSACTIONS: BelanjaTransaction[] = [
     kategori: "Belanja Pegawai",
     sumberDana: "RM",
     nominal: "Rp 892,1 jt",
-    status: "Diverifikasi",
-    statusColor: "bg-violet-100 text-violet-800",
+    statusId: "diajukan",
     tanggal: "17 Jun 2025",
     pic: "Andi Wijaya",
   },
@@ -322,8 +330,7 @@ export const BELANJA_TRANSACTIONS: BelanjaTransaction[] = [
     kategori: "Belanja Barang",
     sumberDana: "BLU",
     nominal: "Rp 356,8 jt",
-    status: "Selesai",
-    statusColor: "bg-emerald-100 text-emerald-800",
+    statusId: "sudah-dibayar",
     tanggal: "16 Jun 2025",
     pic: "Maya Lestari",
   },
@@ -333,8 +340,7 @@ export const BELANJA_TRANSACTIONS: BelanjaTransaction[] = [
     kategori: "Belanja Modal",
     sumberDana: "Hibah",
     nominal: "Rp 512,3 jt",
-    status: "Menunggu Pembayaran",
-    statusColor: "bg-amber-100 text-amber-800",
+    statusId: "menunggu-pembayaran",
     tanggal: "15 Jun 2025",
     pic: "Hendra Pratama",
   },
@@ -380,7 +386,7 @@ export const BELANJA_BOTTOM_KPIS = [
   {
     label: "Rata-rata Siklus Pembayaran",
     value: "14,6 hari",
-    sub: "Dari disetujui → selesai",
+    sub: "Dari disetujui → sudah dibayar",
   },
   {
     label: "Varians Anggaran (Forecast vs Pagu)",
@@ -399,16 +405,7 @@ export function filterBelanjaTransactions(
 ): BelanjaTransaction[] {
   return rows.filter((row) => {
     if (filters.status !== "all") {
-      const statusMap: Record<string, string> = {
-        draft: "Draft",
-        diajukan: "Diajukan",
-        diverifikasi: "Diverifikasi",
-        disetujui: "Disetujui",
-        "menunggu-pembayaran": "Menunggu Pembayaran",
-        selesai: "Selesai",
-        ditolak: "Ditolak",
-      };
-      if (row.status !== statusMap[filters.status]) return false;
+      if (row.statusId !== filters.status) return false;
     }
     if (filters.sumberDana !== "all") {
       const danaMap: Record<string, string> = {

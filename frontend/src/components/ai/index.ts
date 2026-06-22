@@ -1,3 +1,4 @@
+export { AiMarkdownContent } from "./AiMarkdownContent";
 export { AiAssistantButton } from "./AiAssistantButton";
 export { AiAssistantPanel } from "./AiAssistantPanel";
 export { AiChatBubble } from "./AiChatBubble";

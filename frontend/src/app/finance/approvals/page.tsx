@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { ApprovalsDashboard } from "@/components/finance/approvals/ApprovalsDashboard";
 
 export default function FinanceApprovalsPage() {
-  return (
-    <PlaceholderModule
-      title="Approval"
-      subtitle="Antrian persetujuan dokumen keuangan"
-    />
-  );
+  return <ApprovalsDashboard />;
 }

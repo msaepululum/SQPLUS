@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { PaymentsDashboard } from "@/components/finance/payments/PaymentsDashboard";
 
 export default function FinancePaymentsPage() {
-  return (
-    <PlaceholderModule
-      title="Pembayaran"
-      subtitle="Pengajuan, persetujuan, dan pelacakan pembayaran"
-    />
-  );
+  return <PaymentsDashboard />;
 }

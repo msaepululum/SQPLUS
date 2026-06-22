@@ -2,14 +2,22 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { RevenueAnalisisPerKategoriCrud } from "@/components/finance/revenue/RevenueAnalisisPerKategoriCrud";
 import { RevenueCategoryFilter } from "@/components/finance/revenue/RevenueCategoryFilter";
-import { RevenueCategoryList } from "@/components/finance/revenue/RevenueCategoryList";
+import { RevenueDistribusiBulananCrud } from "@/components/finance/revenue/RevenueDistribusiBulananCrud";
+import { RevenueImportTarikCrud } from "@/components/finance/revenue/RevenueImportTarikCrud";
+import { RevenueInputManualCrud } from "@/components/finance/revenue/RevenueInputManualCrud";
+import { RevenueInputRencanaCrud } from "@/components/finance/revenue/RevenueInputRencanaCrud";
+import { RevenueRekapBulananCrud } from "@/components/finance/revenue/RevenueRekapBulananCrud";
+import { RevenueRekapHarianCrud } from "@/components/finance/revenue/RevenueRekapHarianCrud";
+import { RevenueRekonsiliasiCrud } from "@/components/finance/revenue/RevenueRekonsiliasiCrud";
 import { RevenueSectionTabs } from "@/components/finance/revenue/RevenueSectionTabs";
 import { RevenueSetupTargetCrud } from "@/components/finance/revenue/RevenueSetupTargetCrud";
 import {
   BudgetYearScopeBar,
   BudgetYearScopeProvider,
   BudgetYearScopedContent,
+  BudgetYearToolbarFilter,
 } from "@/components/finance/budget/BudgetYearScope";
 import { PageFrame } from "@/components/layout/PageFrame";
 import { useTranslation } from "@/components/providers/LocaleProvider";
@@ -30,7 +38,12 @@ const CATEGORY_TABS = new Set([
   "per-kategori",
 ]);
 
-const YEAR_SCOPED_SLUGS = new Set(["perencanaan-pendapatan"]);
+const YEAR_SCOPED_SLUGS = new Set([
+  "perencanaan-pendapatan",
+  "pengumpulan-rekap",
+  "analisis",
+  "rekonsiliasi",
+]);
 
 type RevenueModulePageProps = {
   config: RevenueModuleConfig;
@@ -115,13 +128,26 @@ function RevenueModulePageInner({
     config.sections.find((section) => section.id === activeTab) ?? config.sections[0];
 
   const showCategoryFilter = activeSection ? CATEGORY_TABS.has(activeSection.id) : false;
-  const showCategoryTable =
-    activeSection &&
-    ["input-rencana", "distribusi-bulanan", "per-kategori"].includes(activeSection.id);
 
   const tabContent =
     activeSection?.id === "setup-target" ? (
       <RevenueSetupTargetCrud />
+    ) : activeSection?.id === "input-rencana" ? (
+      <RevenueInputRencanaCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "distribusi-bulanan" ? (
+      <RevenueDistribusiBulananCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "import-tarik" ? (
+      <RevenueImportTarikCrud />
+    ) : activeSection?.id === "input-manual" ? (
+      <RevenueInputManualCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "rekap-harian" ? (
+      <RevenueRekapHarianCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "rekap-bulanan" ? (
+      <RevenueRekapBulananCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "per-kategori" ? (
+      <RevenueAnalisisPerKategoriCrud activeCategory={activeCategory} />
+    ) : activeSection?.id === "rekonsiliasi-pendapatan" ? (
+      <RevenueRekonsiliasiCrud />
     ) : activeSection ? (
       <div className="mt-3 space-y-3">
         <Card variant="dashed" className="py-6 text-center sm:py-8">
@@ -139,19 +165,12 @@ function RevenueModulePageInner({
           )}
           <p className="mt-4 text-xs text-slate-400">Dalam pengembangan</p>
         </Card>
-        {showCategoryTable && (
-          <RevenueCategoryList
-            showValueColumns={
-              activeSection.id === "input-rencana" ||
-              activeSection.id === "distribusi-bulanan" ||
-              activeSection.id === "per-kategori"
-            }
-          />
-        )}
       </div>
     ) : null;
 
-  const tabsRow = (
+  const isAnalisisModule = config.slug === "analisis";
+
+  const tabsRow = isAnalisisModule ? null : (
     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
       <div className="min-w-0 flex-1">
         {config.sections.length > 1 && (
@@ -167,17 +186,26 @@ function RevenueModulePageInner({
     </div>
   );
 
-  const filtersRow = showCategoryFilter ? (
-    <div className="mt-2">
+  const analisisFilterRow = isAnalisisModule ? (
+    <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2 rounded-lg border border-slate-200/80 bg-slate-50/40 px-2.5 py-2">
+      <BudgetYearToolbarFilter />
       <RevenueCategoryFilter value={activeCategory} onChange={setActiveCategory} />
     </div>
   ) : null;
+
+  const filtersRow =
+    !isAnalisisModule && showCategoryFilter ? (
+      <div className="mt-2">
+        <RevenueCategoryFilter value={activeCategory} onChange={setActiveCategory} />
+      </div>
+    ) : null;
 
   return (
     <PageFrame title={config.title} description={config.subtitle}>
       {isYearScoped ? (
         <>
           {tabsRow}
+          {analisisFilterRow}
           {filtersRow}
           <BudgetYearScopedContent>{tabContent}</BudgetYearScopedContent>
         </>

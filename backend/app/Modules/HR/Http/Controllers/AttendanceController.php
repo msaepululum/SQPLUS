@@ -5,6 +5,7 @@ namespace App\Modules\HR\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Models\AttendanceRecord;
 use App\Modules\HR\Models\Employee;
+use App\Modules\HR\Services\HrInsightService;
 use App\Services\AuditTrailService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -12,10 +13,33 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-    public function __construct(private readonly AuditTrailService $auditTrail) {}
+    public function __construct(
+        private readonly AuditTrailService $auditTrail,
+        private readonly HrInsightService $insights,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
+        if ($request->boolean('hris')) {
+            $noAbsen = $request->user()?->no_absen;
+            if ($noAbsen) {
+                return response()->json([
+                    'data' => $this->insights->attendanceFromHris((string) $noAbsen),
+                    'source' => 'hris',
+                ]);
+            }
+        }
+
+        if ($request->boolean('from_hris') && $request->user()?->hasPermission('hr.employees.view')) {
+            $result = $this->insights->attendanceDailyFromHris(
+                $request->date,
+                $request->integer('page', 1),
+                $request->integer('per_page', 20)
+            );
+
+            return response()->json($result);
+        }
+
         $records = AttendanceRecord::query()
             ->with(['employee:id,employee_code,name'])
             ->when($request->date, fn ($q, $d) => $q->where('date', $d))

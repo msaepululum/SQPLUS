@@ -38,6 +38,7 @@ return [
     'ai' => [
         'provider' => env('AI_PROVIDER', 'openai'),
         'max_tokens' => env('AI_ASSISTANT_MAX_TOKENS', 1024),
+        'read_only_max_rows' => env('AI_READ_ONLY_MAX_ROWS', 100),
     ],
 
     'openai' => [

@@ -4,16 +4,35 @@ namespace App\Modules\HR\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Models\Employee;
+use App\Modules\HR\Services\HrInsightService;
 use App\Services\AuditTrailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function __construct(private readonly AuditTrailService $auditTrail) {}
+    public function __construct(
+        private readonly AuditTrailService $auditTrail,
+        private readonly HrInsightService $insights,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
+        $source = $request->string('source')->toString();
+
+        if ($source === 'payroll' || $source === '') {
+            $payroll = $this->insights->employees([
+                'search' => $request->search,
+                'page' => $request->integer('page', 1),
+                'per_page' => $request->integer('per_page', 15),
+                'status' => $request->status,
+            ]);
+
+            if (($payroll['source'] ?? '') === 'payroll') {
+                return response()->json($payroll);
+            }
+        }
+
         $employees = Employee::query()
             ->with(['position:id,code,name', 'organizationalUnit:id,code,name'])
             ->when($request->search, function ($q, $search) {
@@ -27,7 +46,10 @@ class EmployeeController extends Controller
             ->orderBy('name')
             ->paginate($request->integer('per_page', 15));
 
-        return response()->json($employees);
+        return response()->json([
+            ...$employees->toArray(),
+            'source' => 'sqplus',
+        ]);
     }
 
     public function show(int $id): JsonResponse

@@ -62,7 +62,7 @@ export function SidebarNavNestedItem({
             const itemLabel = childLabels[item.labelKey] ?? item.labelKey;
 
             return (
-              <li key={item.href}>
+              <li key={item.labelKey}>
                 <Link
                   href={item.href}
                   onClick={onNavigate}

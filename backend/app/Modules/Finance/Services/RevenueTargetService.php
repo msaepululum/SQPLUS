@@ -4,110 +4,204 @@ namespace App\Modules\Finance\Services;
 
 use App\Modules\Finance\Models\BudgetYear;
 use App\Modules\Finance\Models\RevenueCategoryTarget;
+use App\Modules\Finance\Models\RevenueYearSetup;
 use App\Modules\Finance\Support\RevenueCategories;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class RevenueTargetService
 {
     /**
-     * @return array{rows: array<int, array<string, mixed>>, summary: array<string, mixed>}
+     * @return array{setup: array<string, mixed>, rows: list<array<string, mixed>>, summary: array<string, mixed>}
      */
     public function list(int $budgetYearId): array
     {
-        $year = BudgetYear::query()->findOrFail($budgetYearId);
-
-        $saved = RevenueCategoryTarget::query()
+        $budgetYear = BudgetYear::query()->findOrFail($budgetYearId);
+        $setup = $this->resolveSetup($budgetYearId);
+        $stored = RevenueCategoryTarget::query()
             ->where('budget_year_id', $budgetYearId)
             ->get()
             ->keyBy('category_id');
 
         $rows = [];
-        $total = 0.0;
+        $totalMenjadi = 0.0;
 
-        foreach (RevenueCategories::all() as $cat) {
-            $row = $saved[$cat['id']] ?? null;
-            $semula = (float) ($row?->target_amount ?? 0);
-            $menjadi = $row?->corrected_amount !== null ? (float) $row->corrected_amount : $semula;
-            $pergeseran = $menjadi - $semula;
-            $perubahanPct = $semula > 0 ? ($pergeseran / $semula) * 100 : null;
+        foreach (RevenueCategories::all() as $category) {
+            $record = $stored->get($category['id']);
+            $semula = $record ? (float) $record->target_amount : 0.0;
+            $pergeseran = $record ? (float) $record->pergeseran_amount : 0.0;
+            $perubahan = $record ? (float) $record->perubahan_amount : 0.0;
+            $menjadi = $semula + $pergeseran + $perubahan;
+            $totalMenjadi += $menjadi;
 
-            $total += $menjadi;
             $rows[] = [
-                'category_id' => $cat['id'],
-                'kode' => $cat['kode'],
-                'label' => $cat['label'],
+                'category_id' => $category['id'],
+                'kode' => $category['kode'],
+                'label' => $category['label'],
                 'semula_amount' => $semula,
-                'menjadi_amount' => $menjadi,
                 'pergeseran_amount' => $pergeseran,
-                'perubahan_pct' => $perubahanPct,
-                'corrected_at' => $row?->corrected_at?->toIso8601String(),
+                'perubahan_amount' => $perubahan,
+                'menjadi_amount' => $menjadi,
+                'perubahan_pct' => $this->computePerubahanPct($semula, $pergeseran, $perubahan),
             ];
         }
 
         return [
+            'setup' => $this->formatSetup($setup),
             'rows' => $rows,
             'summary' => [
-                'budget_year_id' => $year->id,
-                'tahun' => (int) $year->tahun,
-                'total_target' => $total,
+                'budget_year_id' => $budgetYear->id,
+                'tahun' => (int) $budgetYear->tahun,
+                'total_target' => $totalMenjadi,
+                'total_semula' => array_sum(array_column($rows, 'semula_amount')),
+                'total_pergeseran' => array_sum(array_column($rows, 'pergeseran_amount')),
+                'total_perubahan' => array_sum(array_column($rows, 'perubahan_amount')),
                 'jumlah_kategori' => count($rows),
             ],
         ];
     }
 
     /**
-     * @param  array<int, array{category_id: string, menjadi_amount: float|string|int}>  $items
+     * @param  list<array{category_id: string, amount: float|int|string}>  $items
+     * @return array{setup: array<string, mixed>, rows: list<array<string, mixed>>, summary: array<string, mixed>}
      */
-    public function bulkUpsert(int $budgetYearId, array $items): array
+    public function bulkUpsert(int $budgetYearId, string $phase, array $items): array
     {
-        BudgetYear::query()->findOrFail($budgetYearId);
+        $setup = $this->resolveSetup($budgetYearId);
+        $this->assertPhaseWritable($setup, $phase);
 
-        foreach ($items as $item) {
-            $categoryId = (string) $item['category_id'];
-            if (! RevenueCategories::isValid($categoryId)) {
-                throw ValidationException::withMessages([
-                    'category_id' => "Kategori pendapatan tidak valid: {$categoryId}",
-                ]);
-            }
+        $validIds = RevenueCategories::ids();
 
-            $menjadi = (float) $item['menjadi_amount'];
-            if ($menjadi < 0) {
-                throw ValidationException::withMessages([
-                    'menjadi_amount' => 'Target pendapatan tidak boleh negatif.',
-                ]);
-            }
+        DB::transaction(function () use ($budgetYearId, $phase, $items, $validIds): void {
+            foreach ($items as $item) {
+                $categoryId = (string) $item['category_id'];
+                if (! in_array($categoryId, $validIds, true)) {
+                    throw ValidationException::withMessages([
+                        'items' => ["Kategori pendapatan tidak valid: {$categoryId}."],
+                    ]);
+                }
 
-            /** @var RevenueCategoryTarget $target */
-            $target = RevenueCategoryTarget::query()->firstOrCreate(
-                [
+                $amount = (float) $item['amount'];
+                $record = RevenueCategoryTarget::query()->firstOrNew([
                     'budget_year_id' => $budgetYearId,
                     'category_id' => $categoryId,
-                ],
-                ['target_amount' => 0]
-            );
+                ]);
 
-            // Semula selalu mengikuti nilai awal. Koreksi hanya boleh 1x per tahun.
-            if ($target->corrected_amount === null) {
-                if ((float) $target->target_amount === 0.0) {
-                    // Belum pernah diisi → ini menjadi nilai semula.
-                    $target->update(['target_amount' => $menjadi]);
-                } elseif (abs((float) $target->target_amount - $menjadi) > 0.0001) {
-                    // Sudah ada semula, dan berbeda → ini koreksi pertama.
-                    $target->update([
-                        'corrected_amount' => $menjadi,
-                        'corrected_at' => now(),
-                    ]);
+                if ($phase === RevenueYearSetup::STATUS_SEMULA) {
+                    $record->target_amount = $amount;
+                } elseif ($phase === RevenueYearSetup::STATUS_PERGESERAN) {
+                    $record->pergeseran_amount = $amount;
+                } else {
+                    $record->perubahan_amount = $amount;
                 }
-            } else {
-                // Sudah pernah dikoreksi → tidak boleh diubah lagi.
-                if (abs((float) $target->corrected_amount - $menjadi) > 0.0001) {
-                    throw ValidationException::withMessages([
-                        'menjadi_amount' => 'Koreksi target pendapatan hanya boleh dilakukan 1x dalam tahun berjalan.',
-                    ]);
-                }
+
+                $record->save();
             }
-        }
+        });
 
         return $this->list($budgetYearId);
+    }
+
+    /**
+     * @return array{setup: array<string, mixed>, rows: list<array<string, mixed>>, summary: array<string, mixed>}
+     */
+    public function advanceStatus(int $budgetYearId): array
+    {
+        $setup = $this->resolveSetup($budgetYearId);
+
+        DB::transaction(function () use ($setup, $budgetYearId): void {
+            if ($setup->setup_status === RevenueYearSetup::STATUS_SEMULA) {
+                $this->assertAllSemulaFilled($budgetYearId);
+                $setup->setup_status = RevenueYearSetup::STATUS_PERGESERAN;
+                $setup->semula_locked_at = now();
+                $setup->pergeseran_opened_at = now();
+            } elseif ($setup->setup_status === RevenueYearSetup::STATUS_PERGESERAN) {
+                $setup->setup_status = RevenueYearSetup::STATUS_PERUBAHAN;
+                $setup->perubahan_opened_at = now();
+            } else {
+                throw ValidationException::withMessages([
+                    'setup_status' => ['Tahap setup sudah selesai.'],
+                ]);
+            }
+
+            $setup->save();
+        });
+
+        return $this->list($budgetYearId);
+    }
+
+    private function resolveSetup(int $budgetYearId): RevenueYearSetup
+    {
+        return RevenueYearSetup::query()->firstOrCreate(
+            ['budget_year_id' => $budgetYearId],
+            ['setup_status' => RevenueYearSetup::STATUS_SEMULA]
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function formatSetup(RevenueYearSetup $setup): array
+    {
+        return [
+            'setup_status' => $setup->setup_status,
+            'semula_locked_at' => $setup->semula_locked_at?->toIso8601String(),
+            'pergeseran_opened_at' => $setup->pergeseran_opened_at?->toIso8601String(),
+            'perubahan_opened_at' => $setup->perubahan_opened_at?->toIso8601String(),
+            'can_edit_semula' => $setup->setup_status === RevenueYearSetup::STATUS_SEMULA,
+            'can_edit_pergeseran' => $setup->setup_status === RevenueYearSetup::STATUS_PERGESERAN,
+            'can_edit_perubahan' => $setup->setup_status === RevenueYearSetup::STATUS_PERUBAHAN,
+            'can_advance' => in_array($setup->setup_status, [
+                RevenueYearSetup::STATUS_SEMULA,
+                RevenueYearSetup::STATUS_PERGESERAN,
+            ], true),
+            'next_status_label' => match ($setup->setup_status) {
+                RevenueYearSetup::STATUS_SEMULA => 'Pergeseran',
+                RevenueYearSetup::STATUS_PERGESERAN => 'Perubahan',
+                default => null,
+            },
+        ];
+    }
+
+    private function assertPhaseWritable(RevenueYearSetup $setup, string $phase): void
+    {
+        $allowed = match ($phase) {
+            RevenueYearSetup::STATUS_SEMULA => RevenueYearSetup::STATUS_SEMULA,
+            RevenueYearSetup::STATUS_PERGESERAN => RevenueYearSetup::STATUS_PERGESERAN,
+            RevenueYearSetup::STATUS_PERUBAHAN => RevenueYearSetup::STATUS_PERUBAHAN,
+            default => null,
+        };
+
+        if ($allowed === null || $setup->setup_status !== $allowed) {
+            throw ValidationException::withMessages([
+                'phase' => ['Tahap ini belum dibuka atau sudah terkunci.'],
+            ]);
+        }
+    }
+
+    private function assertAllSemulaFilled(int $budgetYearId): void
+    {
+        $stored = RevenueCategoryTarget::query()
+            ->where('budget_year_id', $budgetYearId)
+            ->get()
+            ->keyBy('category_id');
+
+        foreach (RevenueCategories::all() as $category) {
+            $record = $stored->get($category['id']);
+            if (! $record || (float) $record->target_amount <= 0) {
+                throw ValidationException::withMessages([
+                    'items' => ['Semua kategori harus memiliki target semula sebelum membuka tahap pergeseran.'],
+                ]);
+            }
+        }
+    }
+
+    private function computePerubahanPct(float $semula, float $pergeseran, float $perubahan): ?float
+    {
+        if ($semula <= 0) {
+            return null;
+        }
+
+        return round((($pergeseran + $perubahan) / $semula) * 100, 2);
     }
 }

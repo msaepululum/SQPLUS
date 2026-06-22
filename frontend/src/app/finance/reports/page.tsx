@@ -1,5 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { ReportsDashboard } from "@/components/finance/reports/ReportsDashboard";
 
 export default function FinanceReportsPage() {
-  return <PlaceholderModule title="Laporan" subtitle="Laporan keuangan, manajemen, dan pelaporan regulasi" />;
+  return <ReportsDashboard />;
 }

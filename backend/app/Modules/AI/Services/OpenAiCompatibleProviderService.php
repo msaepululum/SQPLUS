@@ -13,6 +13,7 @@ class OpenAiCompatibleProviderService
 
     public function __construct(
         private readonly AiToolRegistry $tools,
+        private readonly AiInsightService $insights,
     ) {}
 
     /**
@@ -58,18 +59,30 @@ class OpenAiCompatibleProviderService
                     $messages[] = [
                         'role' => 'tool',
                         'tool_call_id' => $tc['id'],
-                        'content' => json_encode($output, JSON_UNESCAPED_UNICODE),
+                        'content' => $this->insights->formatToolForModel($name, $output),
                     ];
                 }
 
-                $finalResponse = $this->callApi($messages, []);
-                $content = $finalResponse['choices'][0]['message']['content'] ?? $this->formatFallback($executedTools);
+                $messages[] = [
+                    'role' => 'system',
+                    'content' => 'Susun jawaban akhir sebagai insight bisnis dalam Bahasa Indonesia. Gunakan Markdown ringan. Jangan tampilkan JSON atau dump data mentah.',
+                ];
 
-                return ['content' => $content, 'tool_calls' => $executedTools];
+                $finalResponse = $this->callApi($messages, []);
+                $content = $finalResponse['choices'][0]['message']['content']
+                    ?? $this->insights->synthesizeFromTools($executedTools, $userMessage);
+
+                return [
+                    'content' => $this->insights->polishAssistantContent($content, $userMessage),
+                    'tool_calls' => $executedTools,
+                ];
             }
 
             return [
-                'content' => $choice['content'] ?? 'Maaf, saya tidak dapat memproses permintaan Anda.',
+                'content' => $this->insights->polishAssistantContent(
+                    $choice['content'] ?? 'Maaf, saya tidak dapat memproses permintaan Anda.',
+                    $userMessage
+                ),
                 'tool_calls' => [],
             ];
         } catch (\Throwable $e) {

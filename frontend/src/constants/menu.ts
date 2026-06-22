@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { FINANCE_SUB_NAV } from "./finance-navigation";
 import { HR_SUB_NAV } from "./hr-navigation";
+import { PROCUREMENT_SUB_NAV } from "./procurement-navigation";
+import { SUPPLY_CHAIN_SUB_NAV } from "./supply-chain-navigation";
 
 export type NavChild = {
   labelKey: string;
@@ -55,11 +57,13 @@ export const MAIN_MENU: MenuItem[] = [
     href: "/procurement",
     icon: ShoppingCart,
     descriptionKey: "menu.procurementDescription",
+    children: PROCUREMENT_SUB_NAV,
   },
   {
     labelKey: "menu.supplyChain",
     href: "/supply-chain",
     icon: Boxes,
     descriptionKey: "menu.supplyChainDescription",
+    children: SUPPLY_CHAIN_SUB_NAV,
   },
 ];

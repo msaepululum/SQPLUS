@@ -1,6 +1,8 @@
 import type { Crumb } from "@/components/layout/Breadcrumbs";
 import { FINANCE_SUB_NAV } from "@/constants/finance-navigation";
 import { HR_SUB_NAV } from "@/constants/hr-navigation";
+import { PROCUREMENT_SUB_NAV } from "@/constants/procurement-navigation";
+import { SUPPLY_CHAIN_SUB_NAV } from "@/constants/supply-chain-navigation";
 import { resolveNavTrail } from "@/lib/nav-utils";
 
 type TranslateFn = (key: string) => string;
@@ -29,11 +31,13 @@ const MODULE_ROUTES: ModuleRoute[] = [
     prefix: "/procurement",
     moduleKey: "menu.procurement",
     href: "/procurement",
+    children: PROCUREMENT_SUB_NAV,
   },
   {
     prefix: "/supply-chain",
     moduleKey: "menu.supplyChain",
     href: "/supply-chain",
+    children: SUPPLY_CHAIN_SUB_NAV,
   },
 ];
 

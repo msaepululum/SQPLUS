@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { ExpenditureDashboard } from "@/components/finance/expenditure/ExpenditureDashboard";
 
 export default function FinanceExpenditurePage() {
-  return (
-    <PlaceholderModule
-      title="Belanja"
-      subtitle="Realisasi belanja operasional dan belanja modal"
-    />
-  );
+  return <ExpenditureDashboard />;
 }

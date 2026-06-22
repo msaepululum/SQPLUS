@@ -9,7 +9,7 @@ export type KasBankFilters = {
 };
 
 export const DEFAULT_KAS_BANK_FILTERS: KasBankFilters = {
-  tahun: "2025",
+  tahun: "2026",
   bulan: "all",
   rekening: "all",
   unit: "all",
@@ -19,6 +19,7 @@ export const DEFAULT_KAS_BANK_FILTERS: KasBankFilters = {
 };
 
 export const KAS_BANK_TAHUN_OPTIONS = [
+  { value: "2026", label: "2026" },
   { value: "2025", label: "2025" },
   { value: "2024", label: "2024" },
 ];

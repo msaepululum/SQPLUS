@@ -86,7 +86,7 @@ export function SidebarNavGroup({
             if (child.children && child.children.length > 0) {
               return (
                 <SidebarNavNestedItem
-                  key={child.href}
+                  key={child.labelKey}
                   child={child}
                   label={childLabel}
                   childLabels={childLabels}
@@ -99,7 +99,7 @@ export function SidebarNavGroup({
             const active = isModuleChildActive(pathname, child.href);
 
             return (
-              <li key={child.href}>
+              <li key={child.labelKey}>
                 <Link
                   href={child.href}
                   onClick={onNavigate}

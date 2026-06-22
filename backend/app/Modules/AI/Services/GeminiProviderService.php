@@ -13,6 +13,7 @@ class GeminiProviderService
 
     public function __construct(
         private readonly AiToolRegistry $tools,
+        private readonly AiInsightService $insights,
     ) {}
 
     /**
@@ -55,25 +56,39 @@ class GeminiProviderService
                     $userParts[] = [
                         'functionResponse' => [
                             'name' => $name,
-                            'response' => $output,
+                            'response' => [
+                                'insight_text' => $this->insights->formatToolForModel($name, $output),
+                            ],
                         ],
                     ];
                 }
 
                 $contents[] = ['role' => 'model', 'parts' => $modelParts];
                 $contents[] = ['role' => 'user', 'parts' => $userParts];
+                $contents[] = [
+                    'role' => 'user',
+                    'parts' => [[
+                        'text' => 'Susun jawaban akhir sebagai insight bisnis dalam Bahasa Indonesia. Gunakan Markdown ringan. Jangan tampilkan JSON atau dump data mentah.',
+                    ]],
+                ];
 
                 $finalResponse = $this->generateContent($systemPrompt, $contents, []);
                 $content = $this->extractText($finalResponse['candidates'][0]['content']['parts'] ?? [])
-                    ?: $this->formatFallback($executedTools);
+                    ?: $this->insights->synthesizeFromTools($executedTools, $userMessage);
 
-                return ['content' => $content, 'tool_calls' => $executedTools];
+                return [
+                    'content' => $this->insights->polishAssistantContent($content, $userMessage),
+                    'tool_calls' => $executedTools,
+                ];
             }
 
             $content = $this->extractText($parts);
 
             return [
-                'content' => $content ?: 'Maaf, saya tidak dapat memproses permintaan Anda.',
+                'content' => $this->insights->polishAssistantContent(
+                    $content ?: 'Maaf, saya tidak dapat memproses permintaan Anda.',
+                    $userMessage
+                ),
                 'tool_calls' => [],
             ];
         } catch (\Throwable $e) {

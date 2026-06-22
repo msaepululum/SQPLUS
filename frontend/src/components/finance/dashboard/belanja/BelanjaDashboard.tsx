@@ -27,10 +27,6 @@ export function BelanjaDashboard() {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-slate-500">
-        Ringkasan pagu, realisasi, komitmen, dan status proses belanja rumah sakit.
-      </p>
-
       <BelanjaFiltersBar
         filters={filters}
         onChange={setFilters}

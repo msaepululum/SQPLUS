@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { ExecutiveInsightDashboard } from "@/components/finance/executive-insight/ExecutiveInsightDashboard";
 
 export default function FinanceExecutiveInsightPage() {
-  return (
-    <PlaceholderModule
-      title="Insight Pimpinan"
-      subtitle="Ringkasan eksekutif kinerja keuangan untuk pimpinan"
-    />
-  );
+  return <ExecutiveInsightDashboard />;
 }

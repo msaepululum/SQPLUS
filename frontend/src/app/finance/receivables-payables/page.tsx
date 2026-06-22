@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { ReceivablesPayablesDashboard } from "@/components/finance/receivables-payables/ReceivablesPayablesDashboard";
 
 export default function FinanceReceivablesPayablesPage() {
-  return (
-    <PlaceholderModule
-      title="Hutang & Piutang"
-      subtitle="Monitoring piutang pasien, BPJS, dan kewajiban pembayaran"
-    />
-  );
+  return <ReceivablesPayablesDashboard />;
 }

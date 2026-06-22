@@ -13,6 +13,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ToolbarFilter } from "@/components/finance/budget/BudgetToolbar";
 import { fetchBudgetYears } from "@/services/budgetYearService";
 import type { BudgetYear } from "@/types/budget-year";
 import { cn } from "@/lib/cn";
@@ -196,6 +197,40 @@ export function BudgetYearScopeBar({
         </p>
       )}
     </Card>
+  );
+}
+
+/** Filter tahun inline — selaras dengan ToolbarFilter modul lain */
+export function BudgetYearToolbarFilter({ className }: { className?: string }) {
+  const { years, loading, budgetYearId, setBudgetYearId } = useBudgetYearScope();
+
+  if (loading) {
+    return (
+      <div className={cn("flex h-[30px] items-center gap-1.5 text-[11px] text-slate-400", className)}>
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        Tahun...
+      </div>
+    );
+  }
+
+  if (years.length === 0) {
+    return <span className={cn("text-[10px] text-amber-600", className)}>Tahun —</span>;
+  }
+
+  return (
+    <ToolbarFilter
+      label="Tahun"
+      value={budgetYearId ? String(budgetYearId) : ""}
+      onChange={(v) => setBudgetYearId(Number(v))}
+      className={className}
+    >
+      {years.map((y) => (
+        <option key={y.id} value={y.id}>
+          {y.tahun}
+          {y.status === "active" ? " · Aktif" : y.status === "closed" ? " · Tutup" : ""}
+        </option>
+      ))}
+    </ToolbarFilter>
   );
 }
 

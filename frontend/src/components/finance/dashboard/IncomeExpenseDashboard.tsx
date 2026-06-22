@@ -6,7 +6,7 @@ import { MainSummaryDashboard } from "@/components/finance/dashboard/main-summar
 import { BelanjaDashboard } from "@/components/finance/dashboard/belanja/BelanjaDashboard";
 import { KasBankDashboard } from "@/components/finance/dashboard/kas-bank/KasBankDashboard";
 import { LaporanKeuanganDashboard } from "@/components/finance/dashboard/laporan-keuangan/LaporanKeuanganDashboard";
-import { PiutangDashboard } from "@/components/finance/dashboard/piutang/PiutangDashboard";
+import { HutangPiutangDashboard } from "@/components/finance/receivables-payables/HutangPiutangDashboard";
 import { PenerimaanDashboard } from "@/components/finance/dashboard/penerimaan/PenerimaanDashboard";
 import { FINANCE_DASHBOARD_TABS } from "@/constants/finance-dashboard";
 
@@ -34,7 +34,7 @@ export function IncomeExpenseDashboard() {
 
       {activeTab === 3 && <BelanjaDashboard />}
 
-      {activeTab === 4 && <PiutangDashboard />}
+      {activeTab === 4 && <HutangPiutangDashboard />}
 
       {activeTab === 5 && <KasBankDashboard />}
 

@@ -6,27 +6,67 @@ use App\Models\User;
 
 class AiToolRegistry
 {
-    /** @var array<string, array{permission: ?string, description: string}> */
+    /** @var array<string, array{permission: ?string, description: string, parameters?: array<string, mixed>}> */
     private const TOOLS = [
+        'data.list_sources' => [
+            'permission' => 'ai.assistant.use',
+            'description' => 'Lihat daftar sumber data read-only (GET/view) yang tersedia di database SQ+',
+        ],
+        'data.describe_source' => [
+            'permission' => 'ai.assistant.use',
+            'description' => 'Lihat deskripsi kolom/filter untuk satu sumber data read-only',
+            'parameters' => [
+                'type' => 'object',
+                'properties' => [
+                    'source' => [
+                        'type' => 'string',
+                        'description' => 'Kunci sumber data, mis. finance.revenue atau hr.employees',
+                    ],
+                ],
+                'required' => ['source'],
+            ],
+        ],
+        'data.get_data' => [
+            'permission' => 'ai.assistant.use',
+            'description' => 'Ambil data read-only dari database SQ+ (hanya GET/view, tanpa ubah/hapus data). Gunakan setelah data.list_sources atau data.describe_source.',
+            'parameters' => [
+                'type' => 'object',
+                'properties' => [
+                    'source' => [
+                        'type' => 'string',
+                        'description' => 'Kunci sumber data, mis. finance.cash_bank',
+                    ],
+                    'filters' => [
+                        'type' => 'object',
+                        'description' => 'Filter opsional sesuai sumber data (tahun, bulan, budget_year_id, dll)',
+                    ],
+                    'limit' => [
+                        'type' => 'integer',
+                        'description' => 'Maks baris yang diambil (default 50, max 100)',
+                    ],
+                ],
+                'required' => ['source'],
+            ],
+        ],
         'finance.dashboard_summary' => [
             'permission' => 'finance.reports.view',
-            'description' => 'Ringkasan dashboard keuangan: saldo kas, piutang, hutang, rasio likuiditas',
+            'description' => 'Ringkasan dashboard keuangan live: kas, arus masuk/keluar, rekon ACC',
         ],
         'finance.revenue_summary' => [
             'permission' => 'finance.reports.view',
-            'description' => 'Ringkasan pendapatan bulan berjalan dan YTD per unit layanan',
+            'description' => 'Ringkasan pendapatan live: target, rencana, realisasi per kategori',
         ],
         'finance.expense_realization' => [
             'permission' => 'finance.reports.view',
-            'description' => 'Realisasi belanja vs pagu anggaran per COA',
+            'description' => 'Realisasi belanja vs pagu anggaran live per akun/unit',
         ],
         'finance.cashflow_summary' => [
             'permission' => 'finance.reports.view',
-            'description' => 'Arus kas masuk/keluar 30 hari terakhir',
+            'description' => 'Arus kas masuk/keluar beberapa bulan terakhir (data live)',
         ],
         'hr.employee_summary' => [
             'permission' => 'hr.employees.view',
-            'description' => 'Ringkasan SDM: headcount, status kepegawaian, cuti pending',
+            'description' => 'Ringkasan SDM live: headcount, status kepegawaian, cuti pending',
         ],
         'procurement.request_summary' => [
             'permission' => 'procurement.pr.manage',
@@ -38,13 +78,17 @@ class AiToolRegistry
         ],
         'approval.my_pending_approvals' => [
             'permission' => 'workflow.approve',
-            'description' => 'Daftar approval yang menunggu tindakan pengguna',
+            'description' => 'Daftar approval yang masih aktif di workflow',
         ],
         'report.executive_summary' => [
             'permission' => 'finance.reports.view',
-            'description' => 'Ringkasan eksekutif KPI lintas modul',
+            'description' => 'Ringkasan eksekutif KPI lintas modul dari data live',
         ],
     ];
+
+    public function __construct(
+        private readonly AiReadOnlyDataService $data,
+    ) {}
 
     /** @return list<array{type: string, function: array<string, mixed>}> */
     public function openAiToolDefinitions(User $user): array
@@ -54,16 +98,19 @@ class AiToolRegistry
             if ($config['permission'] && ! $user->hasPermission($config['permission'])) {
                 continue;
             }
+
+            $parameters = $config['parameters'] ?? [
+                'type' => 'object',
+                'properties' => (object) [],
+                'additionalProperties' => false,
+            ];
+
             $tools[] = [
                 'type' => 'function',
                 'function' => [
                     'name' => $name,
                     'description' => $config['description'],
-                    'parameters' => [
-                        'type' => 'object',
-                        'properties' => (object) [],
-                        'additionalProperties' => false,
-                    ],
+                    'parameters' => $parameters,
                 ],
             ];
         }
@@ -86,157 +133,66 @@ class AiToolRegistry
         }
 
         return match ($toolName) {
-            'finance.dashboard_summary' => $this->financeDashboardSummary(),
-            'finance.revenue_summary' => $this->financeRevenueSummary(),
-            'finance.expense_realization' => $this->financeExpenseRealization(),
-            'finance.cashflow_summary' => $this->financeCashflowSummary(),
-            'hr.employee_summary' => $this->hrEmployeeSummary(),
+            'data.list_sources' => $this->wrapListSources($user),
+            'data.describe_source' => $this->data->describeSource($user, (string) ($params['source'] ?? '')),
+            'data.get_data' => $this->data->getData(
+                $user,
+                (string) ($params['source'] ?? ''),
+                (array) ($params['filters'] ?? []),
+                isset($params['limit']) ? (int) $params['limit'] : null,
+            ),
+            'finance.dashboard_summary' => $this->data->financeDashboardSummary(),
+            'finance.revenue_summary' => $this->data->financeRevenueSummary(),
+            'finance.expense_realization' => $this->data->financeExpenseRealization(),
+            'finance.cashflow_summary' => $this->data->financeCashflowSummary(),
+            'hr.employee_summary' => $this->data->hrEmployeeSummary(),
             'procurement.request_summary' => $this->procurementRequestSummary(),
             'supply_chain.stock_critical' => $this->supplyChainStockCritical(),
-            'approval.my_pending_approvals' => $this->approvalMyPending($user),
-            'report.executive_summary' => $this->reportExecutiveSummary(),
+            'approval.my_pending_approvals' => $this->data->approvalMyPending($user),
+            'report.executive_summary' => $this->data->reportExecutiveSummary(),
             default => ['error' => 'unknown_tool', 'message' => 'Tool tidak tersedia.'],
         };
     }
 
-    private function financeDashboardSummary(): array
+    /** @return array<string, mixed> */
+    private function wrapListSources(User $user): array
     {
-        return [
-            'summary' => 'Posisi keuangan per 17 Jun 2026',
-            'metrics' => [
-                ['label' => 'Saldo Kas', 'value' => 'Rp 12,4 M', 'change' => '+3,2%'],
-                ['label' => 'Piutang', 'value' => 'Rp 8,7 M', 'change' => '-1,1%'],
-                ['label' => 'Hutang', 'value' => 'Rp 5,2 M', 'change' => '+0,5%'],
-                ['label' => 'Rasio Likuiditas', 'value' => '2,38', 'change' => 'stabil'],
-            ],
-            'items' => [],
-        ];
-    }
+        $sources = $this->data->listSources($user);
 
-    private function financeRevenueSummary(): array
-    {
         return [
-            'summary' => 'Pendapatan Juni 2026 (mock)',
+            'summary' => count($sources).' sumber data read-only tersedia',
             'metrics' => [
-                ['label' => 'Bulan Berjalan', 'value' => 'Rp 18,2 M', 'change' => '+7,4%'],
-                ['label' => 'YTD', 'value' => 'Rp 98,6 M', 'change' => '+5,1%'],
+                ['label' => 'Mode Akses', 'value' => 'GET / View Only', 'change' => 'tanpa mutasi'],
             ],
-            'items' => [
-                ['unit' => 'Rawat Jalan', 'amount' => 'Rp 6,1 M', 'share' => '33%'],
-                ['unit' => 'Rawat Inap', 'amount' => 'Rp 8,4 M', 'share' => '46%'],
-                ['unit' => 'Penunjang', 'amount' => 'Rp 3,7 M', 'share' => '21%'],
-            ],
-        ];
-    }
-
-    private function financeExpenseRealization(): array
-    {
-        return [
-            'summary' => 'Realisasi belanja vs pagu Q2 2026',
-            'metrics' => [
-                ['label' => 'Total Pagu', 'value' => 'Rp 45 M', 'change' => null],
-                ['label' => 'Realisasi', 'value' => 'Rp 31,2 M', 'change' => '69,3%'],
-            ],
-            'items' => [
-                ['coa' => '5101 - BHP', 'pagu' => 'Rp 12 M', 'realisasi' => 'Rp 9,1 M', 'pct' => '75,8%'],
-                ['coa' => '5201 - Jasa Medis', 'pagu' => 'Rp 18 M', 'realisasi' => 'Rp 14,2 M', 'pct' => '78,9%'],
-                ['coa' => '5301 - Operasional', 'pagu' => 'Rp 15 M', 'realisasi' => 'Rp 7,9 M', 'pct' => '52,7%'],
-            ],
-        ];
-    }
-
-    private function financeCashflowSummary(): array
-    {
-        return [
-            'summary' => 'Arus kas 30 hari terakhir',
-            'metrics' => [
-                ['label' => 'Inflow', 'value' => 'Rp 22,8 M', 'change' => '+4,2%'],
-                ['label' => 'Outflow', 'value' => 'Rp 19,5 M', 'change' => '+2,1%'],
-                ['label' => 'Net Cashflow', 'value' => 'Rp 3,3 M', 'change' => '+12%'],
-            ],
-            'items' => [],
-        ];
-    }
-
-    private function hrEmployeeSummary(): array
-    {
-        return [
-            'summary' => 'Ringkasan SDM per 17 Jun 2026',
-            'metrics' => [
-                ['label' => 'Total Karyawan', 'value' => '342', 'change' => '+4'],
-                ['label' => 'Cuti Pending', 'value' => '12', 'change' => null],
-                ['label' => 'Kontrak Berakhir (30 hari)', 'value' => '8', 'change' => null],
-            ],
-            'items' => [
-                ['status' => 'Tetap', 'count' => 218],
-                ['status' => 'Kontrak', 'count' => 98],
-                ['status' => 'Magang', 'count' => 26],
-            ],
+            'items' => array_map(fn ($s) => [
+                'key' => $s['key'],
+                'label' => $s['label'],
+                'description' => $s['description'],
+            ], $sources),
         ];
     }
 
     private function procurementRequestSummary(): array
     {
         return [
-            'summary' => 'Purchase Request aktif',
+            'summary' => 'Purchase Request — data modul pengadaan belum terhubung ke katalog DB',
             'metrics' => [
-                ['label' => 'Draft', 'value' => '7', 'change' => null],
-                ['label' => 'Menunggu Approval', 'value' => '14', 'change' => null],
-                ['label' => 'Disetujui (bulan ini)', 'value' => '23', 'change' => '+5'],
+                ['label' => 'Status', 'value' => 'Segera hadir', 'change' => null],
             ],
-            'items' => [
-                ['dept' => 'Farmasi', 'open' => 5, 'approved' => 8],
-                ['dept' => 'Gizi', 'open' => 3, 'approved' => 4],
-                ['dept' => 'IPSRS', 'open' => 6, 'approved' => 11],
-            ],
+            'items' => [],
+            'message' => 'Gunakan data.get_data untuk sumber yang sudah tersedia, atau modul Pengadaan di SQ+.',
         ];
     }
 
     private function supplyChainStockCritical(): array
     {
         return [
-            'summary' => 'Item stok kritis (di bawah minimum)',
+            'summary' => 'Stok kritis — data inventori belum terhubung ke katalog DB',
             'metrics' => [
-                ['label' => 'Total Item Kritis', 'value' => '9', 'change' => '+2'],
+                ['label' => 'Status', 'value' => 'Segera hadir', 'change' => null],
             ],
-            'items' => [
-                ['code' => 'MED-001', 'name' => 'Paracetamol 500mg', 'stock' => 120, 'min' => 500],
-                ['code' => 'MED-042', 'name' => 'Infus Set', 'stock' => 45, 'min' => 200],
-                ['code' => 'BHP-018', 'name' => 'Sarung Tangan L', 'stock' => 800, 'min' => 2000],
-            ],
-        ];
-    }
-
-    private function approvalMyPending(User $user): array
-    {
-        return [
-            'summary' => "Approval pending untuk {$user->name}",
-            'metrics' => [
-                ['label' => 'Total Pending', 'value' => '5', 'change' => null],
-            ],
-            'items' => [
-                ['doc' => 'PR-2026-0142', 'type' => 'Purchase Request', 'amount' => 'Rp 12,5 jt', 'dept' => 'Farmasi'],
-                ['doc' => 'LV-2026-0088', 'type' => 'Cuti', 'amount' => '3 hari', 'dept' => 'Keperawatan'],
-                ['doc' => 'PO-2026-0067', 'type' => 'Purchase Order', 'amount' => 'Rp 45 jt', 'dept' => 'IPSRS'],
-            ],
-        ];
-    }
-
-    private function reportExecutiveSummary(): array
-    {
-        return [
-            'summary' => 'Ringkasan eksekutif SQ+ — Juni 2026',
-            'metrics' => [
-                ['label' => 'Pendapatan YTD', 'value' => 'Rp 98,6 M', 'change' => '+5,1%'],
-                ['label' => 'Realisasi Anggaran', 'value' => '69,3%', 'change' => 'on track'],
-                ['label' => 'Occupancy Rate', 'value' => '78%', 'change' => '+2%'],
-                ['label' => 'PR Pending', 'value' => '14', 'change' => null],
-            ],
-            'items' => [
-                ['area' => 'Keuangan', 'status' => 'Stabil', 'note' => 'Likuiditas baik'],
-                ['area' => 'SDM', 'status' => 'Perhatian', 'note' => '8 kontrak berakhir'],
-                ['area' => 'Supply Chain', 'status' => 'Perhatian', 'note' => '9 item stok kritis'],
-            ],
+            'items' => [],
+            'message' => 'Gunakan modul Supply Chain di SQ+ untuk detail stok.',
         ];
     }
 }

@@ -14,6 +14,7 @@ class AiAssistantService
         private readonly AiGuardrailService $guardrail,
         private readonly AiContextService $context,
         private readonly AiProviderService $provider,
+        private readonly AiInsightService $insights,
     ) {}
 
     /** @return array{session: AiSession, messages: list<AiMessage>, tool_results: list<array<string, mixed>>, blocked: bool} */
@@ -64,9 +65,14 @@ class AiAssistantService
             },
         );
 
+        $content = $this->insights->polishAssistantContent($result['content'], $message);
+        if (trim($content) === '' && ! empty($result['tool_calls'])) {
+            $content = $this->insights->synthesizeFromTools($result['tool_calls'], $message);
+        }
+
         $assistantMsg = $session->messages()->create([
             'role' => 'assistant',
-            'content' => $result['content'],
+            'content' => $content,
             'metadata' => ['tool_count' => count($result['tool_calls'])],
         ]);
 

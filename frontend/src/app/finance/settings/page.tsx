@@ -1,10 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { SettingsDashboard } from "@/components/finance/settings/SettingsDashboard";
 
 export default function FinanceSettingsPage() {
-  return (
-    <PlaceholderModule
-      title="Pengaturan"
-      subtitle="Konfigurasi modul keuangan dan RenGar"
-    />
-  );
+  return <SettingsDashboard />;
 }

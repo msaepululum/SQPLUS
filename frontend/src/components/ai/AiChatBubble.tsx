@@ -1,5 +1,6 @@
 "use client";
 
+import { AiMarkdownContent } from "@/components/ai/AiMarkdownContent";
 import { useTranslation } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/cn";
 import type { AiMessage } from "@/types/ai.types";
@@ -24,7 +25,11 @@ export function AiChatBubble({ message, onFeedback, children }: AiChatBubbleProp
             : "border border-sq-border bg-white text-sq-dark shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_rgba(15,23,42,0.04)] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
         )}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{message.content}</p>
+        ) : (
+          <AiMarkdownContent content={message.content} />
+        )}
         {children}
         {!isUser && onFeedback && (
           <div className="mt-2 flex gap-1 border-t border-sq-border/60 pt-2 dark:border-slate-600">

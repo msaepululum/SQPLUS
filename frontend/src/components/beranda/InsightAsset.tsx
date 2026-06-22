@@ -1,17 +1,17 @@
-import { Boxes, ChevronRight } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import { Boxes, ChevronRight, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import {
   BarChartVertical,
   DonutChart,
+  InsightCardShell,
   SectionLink,
   TrendText,
 } from "@/components/beranda/BerandaCharts";
-import {
-  ASSET_ALERTS,
-  ASSET_COMPOSITION,
-  ASSET_MINI,
-  INVENTORY_BARS,
-} from "@/constants/beranda";
+import type { SupplyChainDashboard } from "@/types/supply-chain";
+import { formatAssetAmount } from "@/types/supply-chain";
 import {
   tableBodyStripedClassName,
   tableHeadCellCompactClassName,
@@ -25,106 +25,160 @@ const PRIORITY_BADGE = {
   Rendah: "draft" as const,
 };
 
-export function InsightAsset() {
+type InsightAssetProps = {
+  data: SupplyChainDashboard | null;
+  loading?: boolean;
+};
+
+export function InsightAsset({ data, loading }: InsightAssetProps) {
+  const composition =
+    data?.composition.map((s) => ({
+      label: s.label,
+      pct: s.pct,
+      color: s.color,
+    })) ?? [];
+
+  const trendMonths = data?.perolehan_trend.map((t) => String(t.year)) ?? [];
+  const trendValues =
+    data?.perolehan_trend.map((t) =>
+      Number((t.value / 1_000_000_000).toFixed(1))
+    ) ?? [];
+  const trendMax = Math.ceil(Math.max(...trendValues, 1) * 1.1);
+
+  const miniStats = data
+    ? [
+        {
+          label: "Nilai Persediaan",
+          value: formatAssetAmount(data.inventory.nilai_persediaan_hpp, true),
+          trend: `${data.inventory.item_aktif.toLocaleString("id-ID")} item`,
+          dir: "up" as const,
+        },
+        {
+          label: "Stok Kritis",
+          value: data.inventory.stok_kritis.toLocaleString("id-ID"),
+          trend: "di bawah minimum",
+          dir: data.inventory.stok_kritis > 0 ? ("down" as const) : ("up" as const),
+        },
+        {
+          label: "Nilai Buku BMD",
+          value: formatAssetAmount(data.financial.nilai_buku_bmd, true),
+          trend: `${data.financial.nilai_buku_pct}% buku`,
+          dir: "up" as const,
+        },
+        {
+          label: "Mutasi Pending",
+          value: data.operational.mutasi_pending.toLocaleString("id-ID"),
+          trend: `${data.operational.disposal_pending} disposal`,
+          dir: data.operational.mutasi_pending > 0 ? ("down" as const) : ("neutral" as const),
+        },
+      ]
+    : [];
+
   return (
-    <div className="flex h-full flex-col rounded-xl border border-sq-border bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex items-center justify-between border-b border-sq-border px-4 py-3 dark:border-slate-800">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-50 text-teal-600">
-            <Boxes className="h-4 w-4" strokeWidth={2} />
-          </span>
-          <h3 className="text-sm font-semibold text-sq-dark dark:text-white">
-            Insight Asset / Supply Chain
-          </h3>
+    <InsightCardShell
+      icon={<Boxes className="h-4 w-4 text-teal-600" strokeWidth={2} />}
+      iconBg="bg-teal-50"
+      title="Insight Asset / Supply Chain"
+      href="/supply-chain"
+    >
+      {loading && !data ? (
+        <div className="flex flex-1 items-center justify-center gap-2 py-8 text-sm text-sq-slate">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Memuat data aset & persediaan...
         </div>
-        <SectionLink href="/supply-chain">Lihat Detail</SectionLink>
-      </div>
-
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="grid grid-cols-2 gap-2">
-          {ASSET_MINI.map((m) => (
-            <div
-              key={m.label}
-              className="rounded-lg border border-sq-border bg-slate-50/80 px-2.5 py-2 dark:border-slate-800 dark:bg-slate-800/50"
-            >
-              <p className="text-[10px] text-sq-slate">{m.label}</p>
-              <p className="text-xs font-bold text-sq-dark dark:text-white">{m.value}</p>
-              <TrendText value={m.trend} dir={m.dir} />
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3">
-          <div className="shrink-0">
-            <DonutChart
-              segments={ASSET_COMPOSITION}
-              centerLabel="2.382"
-              centerSub="Aset"
-              size={90}
-            />
-          </div>
-          <div className="min-w-0 flex-1 space-y-1">
-            {ASSET_COMPOSITION.map((s) => (
-              <div key={s.label} className="flex items-center justify-between text-[10px]">
-                <span className="flex items-center gap-1.5 text-sq-slate">
-                  <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
-                  {s.label}
-                </span>
-                <span className="font-semibold text-sq-dark dark:text-slate-200">
-                  {s.pct}%
-                </span>
+      ) : !data ? (
+        <p className="py-6 text-center text-sm text-sq-slate">
+          Gagal memuat data supply chain.
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-2">
+            {miniStats.map((m) => (
+              <div
+                key={m.label}
+                className="rounded-lg border border-sq-border bg-slate-50/80 px-2.5 py-2 dark:border-slate-800 dark:bg-slate-800/50"
+              >
+                <p className="text-[10px] text-sq-slate">{m.label}</p>
+                <p className="text-xs font-bold text-sq-dark dark:text-white">{m.value}</p>
+                <TrendText value={m.trend} dir={m.dir} />
               </div>
             ))}
           </div>
-        </div>
 
-        <div>
-          <p className="mb-1 text-[11px] font-medium text-sq-slate">
-            Nilai Persediaan (6 Bulan Terakhir)
-          </p>
-          <BarChartVertical
-            months={INVENTORY_BARS.months}
-            values={INVENTORY_BARS.values}
-            max={25}
-          />
-        </div>
-
-        <div>
-          <p className="mb-2 text-[11px] font-medium text-sq-slate">
-            Alert Asset & Persediaan
-          </p>
-          <div className={tableShellClassName}>
-            <table className="w-full min-w-[14rem] text-[10px]">
-              <thead>
-                <tr className={tableHeadRowClassName}>
-                  <th className={`${tableHeadCellCompactClassName} text-left`}>Jenis</th>
-                  <th className={`${tableHeadCellCompactClassName} text-left`}>Deskripsi</th>
-                  <th className={`${tableHeadCellCompactClassName} text-left`}>Prioritas</th>
-                  <th className={`${tableHeadCellCompactClassName} text-right`}>Jml</th>
-                </tr>
-              </thead>
-              <tbody className={tableBodyStripedClassName}>
-                {ASSET_ALERTS.map((a) => (
-                  <tr key={a.deskripsi}>
-                    <td className="py-1.5 text-sq-dark dark:text-slate-200">{a.jenis}</td>
-                    <td className="py-1.5 text-sq-slate">{a.deskripsi}</td>
-                    <td className="py-1.5">
-                      <Badge variant={PRIORITY_BADGE[a.prioritas]}>{a.prioritas}</Badge>
-                    </td>
-                    <td className="py-1.5 text-right font-semibold">{a.jumlah}</td>
-                  </tr>
+          {composition.length > 0 && (
+            <div className="flex gap-3">
+              <div className="shrink-0">
+                <DonutChart
+                  segments={composition}
+                  centerLabel={formatAssetAmount(data.financial.nilai_perolehan_bmd, true)}
+                  centerSub="Perolehan"
+                  size={90}
+                />
+              </div>
+              <div className="min-w-0 flex-1 space-y-1">
+                {data.composition.slice(0, 5).map((s) => (
+                  <div key={s.label} className="flex items-center justify-between text-[10px]">
+                    <span className="flex min-w-0 items-center gap-1.5 text-sq-slate">
+                      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: s.color }} />
+                      <span className="truncate">{s.label}</span>
+                    </span>
+                    <span className="ml-1 shrink-0 font-semibold text-sq-dark dark:text-slate-200">
+                      {s.pct}%
+                    </span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </div>
+            </div>
+          )}
 
-        <div className="mt-auto text-center">
-          <SectionLink href="/supply-chain">
-            Lihat Semua Alert <ChevronRight className="inline h-3 w-3" />
-          </SectionLink>
-        </div>
-      </div>
-    </div>
+          {trendMonths.length > 0 && (
+            <div>
+              <p className="mb-1 text-[11px] font-medium text-sq-slate">
+                Perolehan BMD per Tahun (Miliar Rp)
+              </p>
+              <BarChartVertical months={trendMonths} values={trendValues} max={trendMax} />
+            </div>
+          )}
+
+          {data.alerts.length > 0 && (
+            <div>
+              <p className="mb-2 text-[11px] font-medium text-sq-slate">Alert Operasional</p>
+              <div className={tableShellClassName}>
+                <table className="w-full min-w-[14rem] text-[10px]">
+                  <thead>
+                    <tr className={tableHeadRowClassName}>
+                      <th className={`${tableHeadCellCompactClassName} text-left`}>Jenis</th>
+                      <th className={`${tableHeadCellCompactClassName} text-left`}>Deskripsi</th>
+                      <th className={`${tableHeadCellCompactClassName} text-left`}>Prioritas</th>
+                    </tr>
+                  </thead>
+                  <tbody className={tableBodyStripedClassName}>
+                    {data.alerts.slice(0, 4).map((a) => (
+                      <tr key={a.deskripsi}>
+                        <td className="py-1.5 text-sq-dark dark:text-slate-200">{a.jenis}</td>
+                        <td className="py-1.5 text-sq-slate">
+                          <Link href={a.href} className="hover:text-sq-blue hover:underline">
+                            {a.deskripsi}
+                          </Link>
+                        </td>
+                        <td className="py-1.5">
+                          <Badge variant={PRIORITY_BADGE[a.prioritas]}>{a.prioritas}</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-auto text-center">
+            <SectionLink href="/supply-chain/monitoring">
+              Monitoring Lengkap <ChevronRight className="inline h-3 w-3" />
+            </SectionLink>
+          </div>
+        </>
+      )}
+    </InsightCardShell>
   );
 }

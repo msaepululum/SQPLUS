@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function FinancePaymentRequestRedirectPage() {
-  redirect("/finance/payments");
+  redirect("/finance/payments/alur-pembayaran?tab=permintaan");
 }

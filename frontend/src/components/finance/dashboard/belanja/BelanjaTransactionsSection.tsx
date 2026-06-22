@@ -3,6 +3,7 @@
 import { cn } from "@/lib/cn";
 
 import { useMemo } from "react";
+import { useTranslation } from "@/components/providers/LocaleProvider";
 import {
   BELANJA_INSIGHTS,
   BELANJA_TOP_PENDING,
@@ -10,6 +11,7 @@ import {
   filterBelanjaTransactions,
   type BelanjaFilters,
 } from "@/constants/belanja-data";
+import { getExpenditureRequestStatus } from "@/constants/expenditure-status";
 import { cardClassName } from "@/components/ui/Card";
 import { Lightbulb } from "lucide-react";
 import { tableShellClassName, tableBodyStripedClassName,
@@ -21,6 +23,7 @@ type BelanjaTransactionsSectionProps = {
 };
 
 export function BelanjaTransactionsSection({ filters }: BelanjaTransactionsSectionProps) {
+  const { t } = useTranslation();
   const transactions = useMemo(
     () => filterBelanjaTransactions(BELANJA_TRANSACTIONS, filters),
     [filters]
@@ -55,7 +58,9 @@ export function BelanjaTransactionsSection({ filters }: BelanjaTransactionsSecti
                     </td>
                   </tr>
                 ) : (
-                  transactions.map((row) => (
+                  transactions.map((row) => {
+                    const status = getExpenditureRequestStatus(row.statusId);
+                    return (
                     <tr key={row.noDokumen}>
                       <td className="px-2 py-2 font-mono text-slate-700">{row.noDokumen}</td>
                       <td className="px-2 py-2 text-slate-600">{row.unit}</td>
@@ -63,14 +68,15 @@ export function BelanjaTransactionsSection({ filters }: BelanjaTransactionsSecti
                       <td className="px-2 py-2 text-slate-600">{row.sumberDana}</td>
                       <td className="px-2 py-2 text-right font-semibold text-slate-800">{row.nominal}</td>
                       <td className="px-2 py-2">
-                        <span className={`inline-block rounded-full px-2 py-0.5 text-[0.625rem] font-medium ${row.statusColor}`}>
-                          {row.status}
+                        <span className={`inline-block rounded-full px-2 py-0.5 text-[0.625rem] font-medium ${status.badgeClass}`}>
+                          {t(status.labelKey)}
                         </span>
                       </td>
                       <td className="px-2 py-2 text-slate-500">{row.tanggal}</td>
                       <td className="px-2 py-2 text-slate-600">{row.pic}</td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

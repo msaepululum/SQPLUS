@@ -1,10 +1,5 @@
-import { PageFrame } from "@/components/layout/PageFrame";
+import { redirect } from "next/navigation";
 
 export default function ApprovalsPage() {
-  return (
-    <PageFrame
-      title="Persetujuan"
-      description="Antrian dokumen yang memerlukan persetujuan Anda."
-    />
-  );
+  redirect("/finance/approvals");
 }

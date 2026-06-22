@@ -1,11 +1,17 @@
-import type { RevenueTargetRow, RevenueTargetSummary } from "@/types/revenue-target";
+import type {
+  RevenueSetupMeta,
+  RevenueSetupStatus,
+  RevenueTargetRow,
+  RevenueTargetSummary,
+} from "@/types/revenue-target";
 
 type ApiListResponse = {
+  setup: RevenueSetupMeta;
   data: RevenueTargetRow[];
   summary: RevenueTargetSummary;
 };
 
-type ApiBulkResponse = ApiListResponse & { message: string };
+type ApiMutationResponse = ApiListResponse & { message: string };
 
 async function revenueTargetFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const token =
@@ -41,22 +47,55 @@ async function revenueTargetFetch<T>(path: string, options?: RequestInit): Promi
 }
 
 export async function fetchRevenueTargets(budgetYearId: number): Promise<{
+  setup: RevenueSetupMeta;
   rows: RevenueTargetRow[];
   summary: RevenueTargetSummary;
 }> {
   const res = await revenueTargetFetch<ApiListResponse>(
     `/finance/revenue-targets?budget_year_id=${budgetYearId}`
   );
-  return { rows: res.data, summary: res.summary };
+  return { setup: res.setup, rows: res.data, summary: res.summary };
 }
 
 export async function saveRevenueTargetsBulk(
   budgetYearId: number,
-  items: { category_id: string; menjadi_amount: number }[]
-): Promise<{ rows: RevenueTargetRow[]; summary: RevenueTargetSummary; message: string }> {
-  const res = await revenueTargetFetch<ApiBulkResponse>("/finance/revenue-targets/bulk", {
+  phase: RevenueSetupStatus,
+  items: { category_id: string; amount: number }[]
+): Promise<{
+  setup: RevenueSetupMeta;
+  rows: RevenueTargetRow[];
+  summary: RevenueTargetSummary;
+  message: string;
+}> {
+  const res = await revenueTargetFetch<ApiMutationResponse>("/finance/revenue-targets/bulk", {
     method: "POST",
-    body: JSON.stringify({ budget_year_id: budgetYearId, items }),
+    body: JSON.stringify({ budget_year_id: budgetYearId, phase, items }),
   });
-  return { rows: res.data, summary: res.summary, message: res.message };
+  return {
+    setup: res.setup,
+    rows: res.data,
+    summary: res.summary,
+    message: res.message,
+  };
+}
+
+export async function advanceRevenueSetupStatus(budgetYearId: number): Promise<{
+  setup: RevenueSetupMeta;
+  rows: RevenueTargetRow[];
+  summary: RevenueTargetSummary;
+  message: string;
+}> {
+  const res = await revenueTargetFetch<ApiMutationResponse>(
+    "/finance/revenue-targets/advance-status",
+    {
+      method: "POST",
+      body: JSON.stringify({ budget_year_id: budgetYearId }),
+    }
+  );
+  return {
+    setup: res.setup,
+    rows: res.data,
+    summary: res.summary,
+    message: res.message,
+  };
 }

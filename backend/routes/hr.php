@@ -5,6 +5,7 @@ use App\Modules\HR\Http\Controllers\EmployeeController;
 use App\Modules\HR\Http\Controllers\HrDashboardController;
 use App\Modules\HR\Http\Controllers\LeaveRequestController;
 use App\Modules\HR\Http\Controllers\PayrollController;
+use App\Modules\HR\Http\Controllers\PayrollTaxController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('hr')->name('hr.')->group(function () {
@@ -36,4 +37,14 @@ Route::prefix('hr')->name('hr.')->group(function () {
     Route::get('/payroll/periods/{id}', [PayrollController::class, 'show'])
         ->middleware('permission:hr.payroll.view');
     Route::get('/payroll/me', [PayrollController::class, 'me']);
+
+    Route::get('/payroll/tax/schema', [PayrollTaxController::class, 'schema'])
+        ->middleware('permission:hr.payroll.view');
+    Route::get('/payroll/tax/summary', [PayrollTaxController::class, 'summary'])
+        ->middleware('permission:hr.payroll.view');
+    Route::get('/payroll/tax/employees', [PayrollTaxController::class, 'index'])
+        ->middleware('permission:hr.payroll.view');
+    Route::get('/payroll/tax/me', [PayrollTaxController::class, 'me']);
+    Route::post('/payroll/tax/simulate', [PayrollTaxController::class, 'simulate'])
+        ->middleware('permission:hr.payroll.view');
 });

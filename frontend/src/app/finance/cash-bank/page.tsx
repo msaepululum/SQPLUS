@@ -1,5 +1,5 @@
-import { PlaceholderModule } from "@/components/finance/PlaceholderModule";
+import { CashBankDashboard } from "@/components/finance/cash-bank/CashBankDashboard";
 
 export default function FinanceCashBankPage() {
-  return <PlaceholderModule title="Kas & Bank" subtitle="Manajemen kas, rekening bank, dan rekonsiliasi harian" />;
+  return <CashBankDashboard />;
 }

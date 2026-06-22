@@ -21,10 +21,6 @@ export function PiutangDashboard() {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-slate-500">
-        Ringkasan piutang, penagihan, umur piutang, dan status penagihan rumah sakit.
-      </p>
-
       <PiutangFiltersBar
         filters={filters}
         onChange={setFilters}

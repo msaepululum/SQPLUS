@@ -179,7 +179,7 @@ export function BarChartVertical({
         const x = pad.left + i * (chartW / values.length) + 3;
         const y = pad.top + chartH - bh;
         return (
-          <g key={months[i]}>
+          <g key={`bar-${i}`}>
             <rect x={x} y={y} width={barW} height={bh} rx="3" fill={color} fillOpacity="0.85" />
             <text x={x + barW / 2} y={h - 4} textAnchor="middle" className="fill-slate-400 text-[7px]">
               {months[i]}
@@ -215,5 +215,57 @@ export function SectionLink({ href, children }: { href: string; children: React.
     <Link href={href} className="text-[11px] font-semibold text-sq-blue hover:underline">
       {children}
     </Link>
+  );
+}
+
+export function InsightCardShell({
+  icon,
+  iconBg,
+  title,
+  href,
+  linkLabel = "Lihat Detail",
+  children,
+}: {
+  icon: React.ReactNode;
+  iconBg: string;
+  title: string;
+  href: string;
+  linkLabel?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex h-full flex-col rounded-xl border border-sq-border bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex items-center justify-between border-b border-sq-border px-4 py-3 dark:border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className={cn("flex h-7 w-7 items-center justify-center rounded-lg", iconBg)}>
+            {icon}
+          </span>
+          <h3 className="text-sm font-semibold text-sq-dark dark:text-white">{title}</h3>
+        </div>
+        <SectionLink href={href}>{linkLabel}</SectionLink>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-4">{children}</div>
+    </div>
+  );
+}
+
+export function HorizontalMetricBars({
+  rows,
+}: {
+  rows: { label: string; value: string; pct: number; color?: string }[];
+}) {
+  return (
+    <div className="space-y-2">
+      {rows.map((row) => (
+        <div key={row.label}>
+          <div className="mb-0.5 flex justify-between text-[10px]">
+            <span className="text-sq-slate">{row.label}</span>
+            <span className="font-semibold text-sq-dark dark:text-slate-200">{row.pct}%</span>
+          </div>
+          <ProgressBar value={row.pct} color={row.color ?? "bg-blue-500"} />
+          <p className="mt-0.5 text-[10px] text-sq-slate">{row.value}</p>
+        </div>
+      ))}
+    </div>
   );
 }
